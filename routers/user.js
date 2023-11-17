@@ -62,12 +62,22 @@ router.use("/blogs/:blogid/users/:username", function (req, res) {
   res.send("blog detay listesi");
 });
 
+router.use("/login", (req, res) => {
+  res.render(path.join("users/login"), { currentPage: "/login" });
+});
+router.use("/about", (req, res) => {
+  res.render(path.join("users/about"), { currentPage: "/about" });
+});
+router.use("/signIn", (req, res) => {
+  res.render(path.join("users/signIn"), { currentPage: "/signIn" });
+});
+
 router.use("/blogs", function (req, res) {
   res.send("blog listesi");
 });
 
-router.use("/", function (req, res) {
-  res.render(path.join("users/index"));
+router.use("/", (req, res) => {
+  res.render(path.join("users/index"), { currentPage: res.locals.currentPage });
 });
 
 module.exports = router;

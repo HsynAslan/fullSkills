@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+    <title>Login</title>
+  </head>
+  <body class="loginBody">
+    <%- include('../partials/nav') %>
+    <div class="center-bp loginBox flexToBottom">
+      <h2 class="mt-4 mb-4">SignIn Page</h2>
+
+      <div class="flexToBottom loginBoxInputs">
+        <input
+          type="text"
+          name="signInName"
+          id=""
+          placeholder="Enter Your Name"
+          class="mb-3 inputWidth"
+        />
+        <input
+          type="text"
+          name="signInSurName"
+          id=""
+          placeholder="Enter Your Surname"
+          class="mb-3 inputWidth"
+        />
+        <input
+          type="text"
+          name="signInUsername"
+          id=""
+          placeholder="Enter Your username"
+          class="mb-3 inputWidth"
+        />
+        <input
+          type="password"
+          name="signInPassword"
+          id=""
+          placeholder="Enter Your Password"
+          class="mb-3 inputWidth"
+        />
+        <input
+          type="password"
+          name="signInPasswordA"
+          id=""
+          placeholder="Enter Your Password Again"
+          class="mb-3 inputWidth"
+        />
+      </div>
+      <button class="mb-4 enterButton">Submit</button>
+    </div>
+    <%- include('../partials/foot') %>
+  </body>
+</html>
