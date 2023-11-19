@@ -11,24 +11,25 @@
     <%- include('../partials/nav') %>
     <div class="center-bp loginBox flexToBottom">
       <h2 class="mt-4 mb-4">Login</h2>
+      <form action="/login" method="post">
+        <div class="flexToBottom loginBoxInputs">
+          <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            class="mb-3 inputWidth"
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="password"
+            class="mb-3 inputWidth"
+          />
+        </div>
+        <button class="mb-4 enterButton">Submit</button>
+      </form>
 
-      <div class="flexToBottom loginBoxInputs">
-        <input
-          type="text"
-          name="loginName"
-          id=""
-          placeholder="Username"
-          class="mb-3 inputWidth"
-        />
-        <input
-          type="password"
-          name="loginPassword"
-          id=""
-          placeholder="password"
-          class="mb-3 inputWidth"
-        />
-      </div>
-      <button class="mb-4 enterButton">Submit</button>
+      <!-- Form etiketi kapatıldı -->
     </div>
     <%- include('../partials/foot') %>
   </body>

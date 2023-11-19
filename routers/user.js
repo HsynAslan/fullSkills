@@ -51,31 +51,71 @@
 
 // module.exports = routeHandler;
 const express = require("express");
+const session = require("express-session");
+const passport = require("passport");
 const path = require("path");
+const dbConnection = require("../db");
 
 const router = express.Router();
-router.use("/blogs/:blogid/users/:username", function (req, res) {
+var isLogin = false;
+const checkAuth = (req, res, next) => {
+  if (isLogin == true) {
+    console.log("içinde");
+    return next();
+  } else {
+    console.log("içinde değil");
+    res.redirect("/login");
+  }
+};
+router.use("/login", (req, res) => {
+  const { username, password } = req.body;
+
+  const query = "SELECT * FROM users WHERE username = ? AND password = ?";
+
+  dbConnection.query(query, [username, password], (err, results) => {
+    if (err) {
+      console.error("MySQL Query Error: ", err);
+      res.status(500).send("Internal Server Error");
+    } else {
+      if (results.length > 0) {
+        console.log("doğru");
+        // res.render("dashboard", { username });
+        // res.render(path.join("users/dashboard"), { currentPage: "/dashboard" });
+        isLogin = true;
+        res.redirect("/dashboard");
+      } else {
+        console.log("yanlış");
+        console.log("results.length: " + results.length);
+        console.log("username: " + username);
+        console.log("pass: " + password);
+        res.render("users/login", { error: "Invalid username or password" });
+      }
+    }
+  });
+});
+
+router.use("/about", (req, res) => {
+  res.render(path.join("users/about"), { currentPage: "/about" });
+});
+router.get("/dashboard", checkAuth, (req, res) => {
+  res.render("users/dashboard", { currentPage: "/dashboard" });
+});
+
+router.use("/signIn", (req, res) => {
+  res.render(path.join("users/signIn"), { currentPage: "/signIn" });
+});
+
+router.use("/blogs", (req, res) => {
+  res.send("blog listesi");
+});
+
+router.use("/blogs/:blogid/users/:username", (req, res) => {
   console.log(
     "blogid: " + req.params.blogid,
     "username: " + req.params.username
   );
   res.send("blog detay listesi");
 });
-
-router.use("/login", (req, res) => {
-  res.render(path.join("users/login"), { currentPage: "/login" });
-});
-router.use("/about", (req, res) => {
-  res.render(path.join("users/about"), { currentPage: "/about" });
-});
-router.use("/signIn", (req, res) => {
-  res.render(path.join("users/signIn"), { currentPage: "/signIn" });
-});
-
-router.use("/blogs", function (req, res) {
-  res.send("blog listesi");
-});
-
 router.use("/", (req, res) => {
   res.render(path.join("users/index"), { currentPage: res.locals.currentPage });
 });
