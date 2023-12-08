@@ -1,0 +1,51 @@
+<!-- dashboard.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css" />
+      <link rel="stylesheet" type="text/css" href="/css/style.css" />
+      <title>Profile</title>
+    </head>
+  </head>
+  <body class="loginBody">
+    <% include('../partials/nav') %>
+    <div class="center-bp loginBoxAbout flexToBottom">
+      <% if (userInfo) { %>
+      <h2>Çıkış için butona basın <%= userInfo.name %></h2>
+      <!-- Diğer kullanıcı bilgilerini de burada kullanabilirsin -->
+      <button onclick="logout()">Çıkış Yap</button>
+      <% } else { %>
+      <p>Giriş yapmış bir kullanıcı bulunamadı.</p>
+      <% } %>
+    </div>
+    <% include('../partials/foot') %>
+    <script>
+      function logout() {
+        // Çıkış yap butonuna basıldığında yapılacak işlemler
+        // Örneğin, isLogin değerini false yap ve /login sayfasına yönlendir
+        // Bu işlemleri yapabilmek için uygun bir endpoint veya fonksiyon tanımlaman gerekebilir
+        // Bu sadece bir örnektir, gerçek uygulamaya uygun şekilde uyarlamalısın
+        fetch("/logout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ isLogin: false }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // Başarılı şekilde çıkış yapıldığında /login sayfasına yönlendir
+            if (data.success) {
+              window.location.href = "/login";
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+    </script>
+  </body>
+</html>

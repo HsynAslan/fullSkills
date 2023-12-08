@@ -1,16 +1,24 @@
+<!-- dashboard.ejs -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="/css/style.css" />
-    <title>Login</title>
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css" />
+      <link rel="stylesheet" type="text/css" href="/css/style.css" />
+      <title>Dashboard <%= userInfo.name %></title>
+    </head>
   </head>
   <body class="loginBody">
-    <%- include('../partials/nav') %>
+    <%- include('../partials/userNavbar') %>
     <div class="center-bp loginBoxAbout flexToBottom">
-      <h2>giriş yaptınız</h2>
+      <% if (userInfo) { %>
+      <h2>Hoş Geldin <%= userInfo.name %></h2>
+      <!-- Diğer kullanıcı bilgilerini de burada kullanabilirsin -->
+      <% } else { %>
+      <p>Giriş yapmış bir kullanıcı bulunamadı.</p>
+      <% } %>
     </div>
     <%- include('../partials/foot') %>
   </body>

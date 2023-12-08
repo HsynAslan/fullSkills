@@ -11,15 +11,6 @@
       class="<%= currentPage === '/about' ? 'activeButton' : 'nav-link' %>"
       >About</a
     >
-    <a
-      href="/signIn"
-      class="<%= currentPage === '/signIn' ? 'activeButton' : 'nav-link' %>"
-      >Sign In</a
-    >
-    <a
-      href="/login"
-      class="<%= currentPage === '/login' ? 'activeButton' : 'nav-link' %>"
-      >Login</a
-    >
+    <a href="/profile/user/<%= userInfo.username %> "><%= userInfo.name %></a>
   </div>
 </div>

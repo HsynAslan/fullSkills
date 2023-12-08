@@ -1,55 +1,3 @@
-// var fs = require("fs");
-
-// const routeHandler = (request, response) => {
-//   if (request.url == "/") {
-//     fs.readFile("index.html", (error, html) => {
-//       response.writeHead(200, { "Content-Type": "text/html" });
-//       response.write(html);
-//       response.end();
-//     });
-//   } else if (request.url == "/blogs") {
-//     fs.readFile("blogs.html", (error, html) => {
-//       response.writeHead(200, { "Content-Type": "text/html" });
-//       response.write(html);
-//       response.end();
-//     });
-//   } else if (request.url == "/create" && request.method == "POST") {
-//     const data = [];
-
-//     request.on("data", (chunk) => {
-//       data.push(chunk);
-//     });
-
-//     request.on("end", () => {
-//       const result = Buffer.concat(data).toString();
-//       const parsedData = result.split("=")[1];
-
-//       fs.appendFile("blogs.txt", parsedData, (err) => {
-//         if (err) {
-//           console.log(err);
-//         } else {
-//           response.statusCode = 302;
-//           response.setHeader("Location", "/");
-//           response.end();
-//         }
-//       });
-//     });
-//   } else if (request.url == "/create") {
-//     fs.readFile("create.html", (error, html) => {
-//       response.writeHead(200, { "Content-Type": "text/html" });
-//       response.write(html);
-//       response.end();
-//     });
-//   } else {
-//     fs.readFile("404.html", (error, html) => {
-//       response.writeHead(404, { "Content-Type": "text/html" });
-//       response.write(html);
-//       response.end();
-//     });
-//   }
-// };
-
-// module.exports = routeHandler;
 const express = require("express");
 const session = require("express-session");
 const passport = require("passport");
@@ -61,12 +9,19 @@ var isLogin = false;
 const checkAuth = (req, res, next) => {
   if (isLogin == true) {
     console.log("içinde");
+    // userInfo'yi res.locals üzerinde tanımla
+    const username = req.body.username; // Kullanıcının adını doğru şekilde almak için
+
+    res.locals.userInfo = {
+      name: username, // Gerçek kullanıcı adını buraya eklemelisin
+    };
     return next();
   } else {
     console.log("içinde değil");
     res.redirect("/login");
   }
 };
+
 router.use("/login", (req, res) => {
   const { username, password } = req.body;
 
@@ -79,15 +34,14 @@ router.use("/login", (req, res) => {
     } else {
       if (results.length > 0) {
         console.log("doğru");
-        // res.render("dashboard", { username });
-        // res.render(path.join("users/dashboard"), { currentPage: "/dashboard" });
         isLogin = true;
-        res.redirect("/dashboard");
+        // userInfo'yi res.locals üzerinde tanımla
+        res.locals.userInfo = {
+          name: username,
+        };
+        res.redirect("/dashboard/user/" + username);
       } else {
         console.log("yanlış");
-        console.log("results.length: " + results.length);
-        console.log("username: " + username);
-        console.log("pass: " + password);
         res.render("users/login", { error: "Invalid username or password" });
       }
     }
@@ -97,8 +51,70 @@ router.use("/login", (req, res) => {
 router.use("/about", (req, res) => {
   res.render(path.join("users/about"), { currentPage: "/about" });
 });
-router.get("/dashboard", checkAuth, (req, res) => {
-  res.render("users/dashboard", { currentPage: "/dashboard" });
+router.use("/profile/user/:username", checkAuth, (req, res) => {
+  const requestedUsername = req.params.username;
+
+  // Şimdi requestedUsername ile veritabanından ilgili kullanıcıyı sorgulayabilirsiniz.
+  const query = "SELECT * FROM users WHERE username = ?";
+
+  dbConnection.query(query, [requestedUsername], (err, results) => {
+    if (err) {
+      console.error("MySQL Query Error: ", err);
+      res.status(500).send("Internal Server Error");
+    } else {
+      if (results.length > 0) {
+        // Kullanıcı bulundu, bilgileri userInfo'ye ekle
+        const userInfo = {
+          id: results[0].id,
+          username: results[0].username,
+          password: results[0].password,
+          name: results[0].name,
+          surname: results[0].surname,
+        };
+
+        res.render("users/profile", { currentPage: "/profile", userInfo });
+      } else {
+        // Kullanıcı bulunamadı
+        res.render("users/profile", {
+          currentPage: "/profile",
+          userInfo: null,
+        });
+      }
+    }
+  });
+});
+
+router.get("/dashboard/user/:username", checkAuth, (req, res) => {
+  const requestedUsername = req.params.username;
+
+  // Şimdi requestedUsername ile veritabanından ilgili kullanıcıyı sorgulayabilirsiniz.
+  const query = "SELECT * FROM users WHERE username = ?";
+
+  dbConnection.query(query, [requestedUsername], (err, results) => {
+    if (err) {
+      console.error("MySQL Query Error: ", err);
+      res.status(500).send("Internal Server Error");
+    } else {
+      if (results.length > 0) {
+        // Kullanıcı bulundu, bilgileri userInfo'ye ekle
+        const userInfo = {
+          id: results[0].id,
+          username: results[0].username,
+          password: results[0].password,
+          name: results[0].name,
+          surname: results[0].surname,
+        };
+
+        res.render("users/dashboard", { currentPage: "/dashboard", userInfo });
+      } else {
+        // Kullanıcı bulunamadı
+        res.render("users/dashboard", {
+          currentPage: "/dashboard",
+          userInfo: null,
+        });
+      }
+    }
+  });
 });
 
 router.use("/signIn", (req, res) => {
