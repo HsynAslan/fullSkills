@@ -2,9 +2,23 @@ const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
 const dbConnection = require("./db");
-
+const session = require("express-session");
 const app = express();
 const port = 3000;
+
+app.use(
+  session({
+    secret: "mysecretkey",
+    resave: true,
+    saveUninitialized: false,
+  })
+);
+
+// Logout endpoint'i
+app.post("/logout", (req, res) => {
+  req.session.destroy(); // Oturumu sonlandır
+  res.json({ success: true });
+});
 
 app.use(
   "/fontawesome",

@@ -7,19 +7,73 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css" />
       <link rel="stylesheet" type="text/css" href="/css/style.css" />
+      <link rel="stylesheet" href="dist/notiflix-X.X.X.min.css" />
       <title>Dashboard <%= userInfo.name %></title>
     </head>
   </head>
   <body class="loginBody">
     <%- include('../partials/userNavbar') %>
-    <div class="center-bp loginBoxAbout flexToBottom">
+    <div class="">
       <% if (userInfo) { %>
-      <h2>Hoş Geldin <%= userInfo.name %></h2>
       <!-- Diğer kullanıcı bilgilerini de burada kullanabilirsin -->
+
+      <div class="dashboardAddSkill p-5">
+        <form action="/saveSkill" method="post">
+          <div class="allOptionDashboard ms-4">
+            <div class="mt-4 mb-5">
+              <label for="skill" class="me-3">Skill:</label>
+              <select name="skill" id="skill" class="d-Skill">
+                <!-- Burada database'den gelen skill adlarını döngü ile ekleyebilirsin -->
+                <option value="skill1">Skill 1</option>
+                <option value="skill2">Skill 2</option>
+                <!-- ... Diğer skill adları -->
+              </select>
+            </div>
+            <div class="mb-2">
+              <label for="startDate">Başlangıç Tarihi:</label>
+              <input type="date" name="startDate" id="startDate" class="me-2" />
+
+              <label for="endDate">Bitiş Tarihi:</label>
+              <input type="date" name="endDate" id="endDate" />
+            </div>
+            <div class="mb-5">
+              <h6>Tek günlük bir etkinlik ise lütfen günleri aynı gün</h6>
+            </div>
+            <label for="description">Açıklama:</label>
+            <div class="mb-5">
+              <textarea
+                name="description"
+                id="description"
+                placeholder="Açıklama"
+                class="d-Aciklama"
+              ></textarea>
+            </div>
+            <label for="withWhom">Kimle:</label>
+            <div class="mb-5 mt-2">
+              <select name="withWhom" id="withWhom">
+                <!-- Burada database'den gelen arkadaş bilgilerini döngü ile ekleyebilirsin -->
+                <option value="friend1">Arkadaş 1</option>
+                <option value="friend2">Arkadaş 2</option>
+                <!-- ... Diğer arkadaş bilgileri -->
+              </select>
+            </div>
+            <div class="">
+              <label for="rating">Puan:</label>
+              <input type="number" name="rating" id="rating" min="0" max="10" />
+            </div>
+            <h6>1-10 arası seçim yapın lütfen</h6>
+            <div class="mb-5 mt-5">
+              <button type="submit">Kaydet</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
       <% } else { %>
       <p>Giriş yapmış bir kullanıcı bulunamadı.</p>
       <% } %>
     </div>
     <%- include('../partials/foot') %>
+    <script src="dist/notiflix-X.X.X.min.js"></script>
   </body>
 </html>

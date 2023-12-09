@@ -18,8 +18,10 @@
     "express-session": "^1.17.3",
     "font-awesome": "^4.7.0",
     "mysql": "^2.18.1",
+    "notiflix": "^3.2.6",
     "passport": "^0.6.0",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "sweetalert2": "^11.10.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.19"

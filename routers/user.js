@@ -7,22 +7,46 @@ const dbConnection = require("../db");
 const router = express.Router();
 var isLogin = false;
 const checkAuth = (req, res, next) => {
-  if (isLogin == true) {
-    console.log("içinde");
-    // userInfo'yi res.locals üzerinde tanımla
-    const username = req.body.username; // Kullanıcının adını doğru şekilde almak için
-
-    res.locals.userInfo = {
-      name: username, // Gerçek kullanıcı adını buraya eklemelisin
-    };
+  if (req.session.userInfo) {
+    // Oturumda kullanıcı bilgileri varsa devam et
+    res.locals.userInfo = req.session.userInfo;
     return next();
   } else {
-    console.log("içinde değil");
     res.redirect("/login");
   }
 };
+router.post("/saveSkill", (req, res) => {
+  console.log("ad: " + req.session.userInfo);
+  console.log(req.session.userInfo.name);
 
-router.use("/login", (req, res) => {
+  console.log("yazma yerine girdi");
+  const { skill, startDate, endDate, description, withWhom, rating } = req.body;
+  const username = req.session.userInfo.name;
+
+  // Veritabanına ekleme işlemi
+  const query =
+    "INSERT INTO user_skills (username, skill, start_date, end_date, description, with_whom, rating) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+  dbConnection.query(
+    query,
+    [username, skill, startDate, endDate, description, withWhom, rating],
+    (err, result) => {
+      if (err) {
+        console.error("MySQL Query Error: ", err);
+        res.status(500).json({ success: false });
+      } else {
+        // res.json({ success: true, message: "User registered successfully" });
+        res.send("<script>window.location.href = document.referrer;</script>");
+      }
+    }
+  );
+  console.log("yazma yerinden çıktı");
+});
+router.get("/login", (req, res) => {
+  res.render("users/login", { currentPage: "/login" });
+});
+
+router.post("/login", (req, res) => {
   const { username, password } = req.body;
 
   const query = "SELECT * FROM users WHERE username = ? AND password = ?";
@@ -33,15 +57,11 @@ router.use("/login", (req, res) => {
       res.status(500).send("Internal Server Error");
     } else {
       if (results.length > 0) {
-        console.log("doğru");
-        isLogin = true;
-        // userInfo'yi res.locals üzerinde tanımla
-        res.locals.userInfo = {
+        req.session.userInfo = {
           name: username,
         };
         res.redirect("/dashboard/user/" + username);
       } else {
-        console.log("yanlış");
         res.render("users/login", { error: "Invalid username or password" });
       }
     }
@@ -52,6 +72,7 @@ router.use("/about", (req, res) => {
   res.render(path.join("users/about"), { currentPage: "/about" });
 });
 router.use("/profile/user/:username", checkAuth, (req, res) => {
+  Loading.dots();
   const requestedUsername = req.params.username;
 
   // Şimdi requestedUsername ile veritabanından ilgili kullanıcıyı sorgulayabilirsiniz.
@@ -82,6 +103,7 @@ router.use("/profile/user/:username", checkAuth, (req, res) => {
       }
     }
   });
+  Loading.remove();
 });
 
 router.get("/dashboard/user/:username", checkAuth, (req, res) => {
