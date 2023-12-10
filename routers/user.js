@@ -15,33 +15,44 @@ const checkAuth = (req, res, next) => {
     res.redirect("/login");
   }
 };
-router.post("/saveSkill", (req, res) => {
-  console.log("ad: " + req.session.userInfo);
-  console.log(req.session.userInfo.name);
+router.post("/saveUser", (req, res) => {
+  // req.body objesinden gerekli bilgileri al
+  const {
+    signInName,
+    signInSurName,
+    signInUsername,
+    signInPassword,
+    signInPasswordA,
+  } = req.body;
 
-  console.log("yazma yerine girdi");
-  const { skill, startDate, endDate, description, withWhom, rating } = req.body;
-  const username = req.session.userInfo.name;
+  // Diğer kontrolleri ve işlemleri gerçekleştir
+
+  // Örneğin, parolaların eşleşip eşleşmediğini kontrol et
+  if (signInPassword !== signInPasswordA) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Passwords do not match" });
+  }
 
   // Veritabanına ekleme işlemi
   const query =
-    "INSERT INTO user_skills (username, skill, start_date, end_date, description, with_whom, rating) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO users (username, password, name, surname) VALUES (?, ?, ?, ?)";
 
   dbConnection.query(
     query,
-    [username, skill, startDate, endDate, description, withWhom, rating],
+    [signInUsername, signInPassword, signInName, signInSurName],
     (err, result) => {
       if (err) {
         console.error("MySQL Query Error: ", err);
         res.status(500).json({ success: false });
       } else {
-        // res.json({ success: true, message: "User registered successfully" });
-        res.send("<script>window.location.href = document.referrer;</script>");
+        // res.redirect("/dashboard/user/" + username);
+        res.redirect("/login");
       }
     }
   );
-  console.log("yazma yerinden çıktı");
 });
+
 router.get("/login", (req, res) => {
   res.render("users/login", { currentPage: "/login" });
 });
@@ -72,7 +83,6 @@ router.use("/about", (req, res) => {
   res.render(path.join("users/about"), { currentPage: "/about" });
 });
 router.use("/profile/user/:username", checkAuth, (req, res) => {
-  Loading.dots();
   const requestedUsername = req.params.username;
 
   // Şimdi requestedUsername ile veritabanından ilgili kullanıcıyı sorgulayabilirsiniz.
@@ -103,7 +113,6 @@ router.use("/profile/user/:username", checkAuth, (req, res) => {
       }
     }
   });
-  Loading.remove();
 });
 
 router.get("/dashboard/user/:username", checkAuth, (req, res) => {
