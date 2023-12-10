@@ -176,3 +176,10 @@
   width: 500px;
   height: 150px;
 }
+.isTeacher {
+  margin-top: 2vh;
+}
+.checkboxTeacher {
+  margin-left: 2vh;
+  transform: scale(2); /* Checkbox boyutunu büyütme */
+}

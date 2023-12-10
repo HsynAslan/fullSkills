@@ -23,9 +23,12 @@ router.post("/saveUser", (req, res) => {
     signInUsername,
     signInPassword,
     signInPasswordA,
+    teacher,
   } = req.body;
 
   // Diğer kontrolleri ve işlemleri gerçekleştir
+  console.log("----------------------");
+  console.log("öğretmen misin: " + teacher);
 
   // Örneğin, parolaların eşleşip eşleşmediğini kontrol et
   if (signInPassword !== signInPasswordA) {
@@ -36,17 +39,16 @@ router.post("/saveUser", (req, res) => {
 
   // Veritabanına ekleme işlemi
   const query =
-    "INSERT INTO users (username, password, name, surname) VALUES (?, ?, ?, ?)";
+    "INSERT INTO users (username, password, name, surname, isteacher) VALUES (?, ?, ?, ?, ?)";
 
   dbConnection.query(
     query,
-    [signInUsername, signInPassword, signInName, signInSurName],
+    [signInUsername, signInPassword, signInName, signInSurName, teacher],
     (err, result) => {
       if (err) {
         console.error("MySQL Query Error: ", err);
         res.status(500).json({ success: false });
       } else {
-        // res.redirect("/dashboard/user/" + username);
         res.redirect("/login");
       }
     }
