@@ -183,3 +183,16 @@
   margin-left: 2vh;
   transform: scale(2); /* Checkbox boyutunu büyütme */
 }
+.eachFriend {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  align-items: stretch;
+  margin-bottom: 2vh;
+}
+.friendButton {
+  background-color: #00ddeb;
+  width: fit-content;
+  border-radius: 0px 10px 0px 10px;
+  margin-left: 2vh;
+}

@@ -15,6 +15,31 @@ const checkAuth = (req, res, next) => {
     res.redirect("/login");
   }
 };
+
+router.get("/users/search", (req, res) => {
+  console.log("search'a girdi");
+  const searchTerm = req.query.term;
+
+  // Veritabanında arama işlemi
+  const query =
+    "SELECT name, surname, username FROM users WHERE name LIKE ? OR surname LIKE ? OR username LIKE ?";
+
+  const searchValue = `%${searchTerm}%`;
+
+  dbConnection.query(
+    query,
+    [searchValue, searchValue, searchValue],
+    (err, results) => {
+      if (err) {
+        console.error("MySQL Query Error: ", err);
+        res.status(500).json({ success: false });
+      } else {
+        res.render("users/searchResults", { results });
+      }
+    }
+  );
+});
+
 router.post("/saveUser", (req, res) => {
   // req.body objesinden gerekli bilgileri al
   const {
@@ -53,6 +78,62 @@ router.post("/saveUser", (req, res) => {
       }
     }
   );
+});
+
+router.post("/saveSkill", (req, res) => {
+  // req.body objesinden gerekli bilgileri al
+  const { skill, startDate, endDate, description, withWhom, rating } = req.body;
+  const username = req.session.userInfo.name;
+
+  // Veritabanına ekleme işlemi
+  const query =
+    "INSERT INTO user_skills (username, skill, start_date, end_date, description, with_whom, rating) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+  dbConnection.query(
+    query,
+    [username, skill, startDate, endDate, description, withWhom, rating],
+    (err, result) => {
+      if (err) {
+        console.error("MySQL Query Error: ", err);
+        res.status(500).json({ success: false });
+      } else {
+        res.redirect("/dashboard/user/" + username);
+      }
+    }
+  );
+});
+
+router.get("/users/network/:username", (req, res) => {
+  const requestedUsername = req.params.username;
+
+  // Şimdi requestedUsername ile veritabanından ilgili kullanıcıyı sorgulayabilirsiniz.
+  const query = "SELECT * FROM users WHERE username = ?";
+
+  dbConnection.query(query, [requestedUsername], (err, results) => {
+    if (err) {
+      console.error("MySQL Query Error: ", err);
+      res.status(500).send("Internal Server Error");
+    } else {
+      if (results.length > 0) {
+        // Kullanıcı bulundu, bilgileri userInfo'ye ekle
+        const userInfo = {
+          id: results[0].id,
+          username: results[0].username,
+          password: results[0].password,
+          name: results[0].name,
+          surname: results[0].surname,
+        };
+
+        res.render("users/network", { currentPage: "/network", userInfo });
+      } else {
+        // Kullanıcı bulunamadı
+        res.render("users/dashboard", {
+          currentPage: "/dashboard",
+          userInfo: null,
+        });
+      }
+    }
+  });
 });
 
 router.get("/login", (req, res) => {
@@ -167,6 +248,10 @@ router.use("/blogs/:blogid/users/:username", (req, res) => {
 });
 router.use("/", (req, res) => {
   res.render(path.join("users/index"), { currentPage: res.locals.currentPage });
+});
+
+router.use((req, res, next) => {
+  res.status(404).render("404", { currentPage: "/404" });
 });
 
 module.exports = router;

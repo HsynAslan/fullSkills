@@ -1,0 +1,55 @@
+<!-- dashboard.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+    <link rel="stylesheet" href="dist/notiflix-X.X.X.min.css" />
+    <title><%= userInfo.name %> Dashboard</title>
+  </head>
+  <body class="loginBody">
+    <%- include('../partials/userNavbar') %>
+    <div class="">
+      <% if (userInfo) { %>
+      <h4>Arkadaş Ekleme Sayfası</h4>
+
+      <form action="/users/search" method="GET">
+        <div class="mb-3">
+          <label for="searchInput" class="form-label">Search:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="searchInput"
+            name="term"
+            placeholder="Enter name or username"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+      </form>
+
+      <div id="searchResults"></div>
+
+      <% } else { %>
+      <p>Giriş yapmış bir kullanıcı bulunamadı.</p>
+      <% } %>
+    </div>
+    <%- include('../partials/foot') %>
+    <script src="dist/notiflix-X.X.X.min.js"></script>
+    <script>
+      document.querySelector("form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        const searchTerm = document.getElementById("searchInput").value;
+
+        fetch(`http://127.0.0.1:3000/users/search?term=${searchTerm}`)
+          .then((response) => response.text()) // text olarak al
+          .then((data) => {
+            const searchResults = document.getElementById("searchResults");
+            searchResults.innerHTML = data; // innerHTML olarak ekle
+          })
+          .catch((error) => console.error("Error:", error));
+      });
+    </script>
+  </body>
+</html>

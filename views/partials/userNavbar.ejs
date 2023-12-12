@@ -11,6 +11,12 @@
       class="<%= currentPage === '/about' ? 'activeButton' : 'nav-link' %>"
       >About</a
     >
+
+    <a
+      href="/users/network/<%= userInfo.username %>"
+      class="<%= currentPage === '/about' ? 'activeButton' : 'nav-link' %>"
+      >Network</a
+    >
     <a href="/profile/user/<%= userInfo.username %> "><%= userInfo.name %></a>
   </div>
 </div>

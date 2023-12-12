@@ -1,0 +1,24 @@
+<!-- searchResults.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search Results</title>
+  </head>
+  <body>
+    <h1>Search Results</h1>
+    <ul>
+      <% results.forEach(result => { %>
+
+      <li class="eachFriend">
+        Arkadaşlık İsteği Gönder ->
+        <Button class="friendButton"
+          ><%= result.name %> <%= result.surname %> (<%= result.username
+          %>)</Button
+        >
+      </li>
+      <% }); %>
+    </ul>
+  </body>
+</html>
