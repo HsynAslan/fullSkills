@@ -11,26 +11,31 @@
   </head>
   <body class="loginBody">
     <%- include('../partials/userNavbar') %>
-    <div class="">
+    <div class="mt-5 ms-4 me-4 searchFriend">
       <% if (userInfo) { %>
+
       <h4>Arkadaş Ekleme Sayfası</h4>
-
-      <form action="/users/search" method="GET">
-        <div class="mb-3">
-          <label for="searchInput" class="form-label">Search:</label>
-          <input
-            type="text"
-            class="form-control"
-            id="searchInput"
-            name="term"
-            placeholder="Enter name or username"
-          />
+      <div class="seperateFriend mt-5">
+        <div class="seperateFriend1 p-3">
+          <form action="/users/search" method="GET">
+            <div class="mb-3">
+              <label for="searchInput" class="form-label">Search:</label>
+              <input
+                type="text"
+                class="form-control"
+                id="searchInput"
+                name="term"
+                placeholder="Enter name or username"
+              />
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+          </form>
         </div>
-        <button type="submit" class="btn btn-primary">Search</button>
-      </form>
-
-      <div id="searchResults"></div>
-
+        <div id="" class="seperateFriend2 p-3">
+          <h3>Search Results</h3>
+          <div id="searchResults"></div>
+        </div>
+      </div>
       <% } else { %>
       <p>Giriş yapmış bir kullanıcı bulunamadı.</p>
       <% } %>

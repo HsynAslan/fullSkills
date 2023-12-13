@@ -7,18 +7,25 @@
     <title>Search Results</title>
   </head>
   <body>
-    <h1>Search Results</h1>
+    <% if (results && results.length > 0) { %>
     <ul>
       <% results.forEach(result => { %>
 
       <li class="eachFriend">
         Arkadaşlık İsteği Gönder ->
-        <Button class="friendButton"
-          ><%= result.name %> <%= result.surname %> (<%= result.username
-          %>)</Button
+        <button
+          class="friendButton"
+          onclick="location.href='/sendFriendRequest/<%= userInfo.name %>/<%= result.username %>';"
         >
+          <%= result.name %> <%= result.surname %> (<%= result.username %>)
+        </button>
       </li>
       <% }); %>
     </ul>
+
+    <% } else { %>
+    <h4>Aradığınız kriterlere uygun kullanıcı bulunamadı.</h4>
+    <% } %>
+    <script></script>
   </body>
 </html>

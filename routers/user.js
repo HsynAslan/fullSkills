@@ -16,28 +16,47 @@ const checkAuth = (req, res, next) => {
   }
 };
 
+router.get("/sendFriendRequest/:name/:username", checkAuth, (req, res) => {
+  const { name, username } = req.params;
+
+  // Burada arkadaşlık isteği gönderme işlemini gerçekleştirebilirsin
+  // Örneğin, bir veritabanına kayıt ekleyebilir veya başka bir işlem yapabilirsin
+  console.log(`Arkadaşlık isteği gönderildi: ${name}  (${username})`);
+
+  // İstek gönderildi mesajını görüntüle
+  // res.render("users/searchResults", { results: [] }); // Değiştir: results yerine boş bir dizi gönderiyoruz
+
+  // İstek gönderildikten sonra tekrar network sayfasına yönlendir
+  res.redirect(`/users/network/${name}`);
+});
+
 router.get("/users/search", (req, res) => {
   console.log("search'a girdi");
   const searchTerm = req.query.term;
 
   // Veritabanında arama işlemi
-  const query =
-    "SELECT name, surname, username FROM users WHERE name LIKE ? OR surname LIKE ? OR username LIKE ?";
+  if (searchTerm) {
+    const query =
+      "SELECT name, surname, username FROM users WHERE name LIKE ? OR surname LIKE ? OR username LIKE ?";
 
-  const searchValue = `%${searchTerm}%`;
+    const searchValue = `%${searchTerm}%`;
 
-  dbConnection.query(
-    query,
-    [searchValue, searchValue, searchValue],
-    (err, results) => {
-      if (err) {
-        console.error("MySQL Query Error: ", err);
-        res.status(500).json({ success: false });
-      } else {
-        res.render("users/searchResults", { results });
+    dbConnection.query(
+      query,
+      [searchValue, searchValue, searchValue],
+      (err, results) => {
+        if (err) {
+          console.error("MySQL Query Error: ", err);
+          res.status(500).json({ success: false });
+        } else {
+          res.render("users/searchResults", {
+            results,
+            userInfo: req.session.userInfo,
+          });
+        }
       }
-    }
-  );
+    );
+  }
 });
 
 router.post("/saveUser", (req, res) => {
@@ -103,7 +122,7 @@ router.post("/saveSkill", (req, res) => {
   );
 });
 
-router.get("/users/network/:username", (req, res) => {
+router.get("/users/network/:username", checkAuth, (req, res) => {
   const requestedUsername = req.params.username;
 
   // Şimdi requestedUsername ile veritabanından ilgili kullanıcıyı sorgulayabilirsiniz.

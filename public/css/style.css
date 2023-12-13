@@ -196,3 +196,37 @@
   border-radius: 0px 10px 0px 10px;
   margin-left: 2vh;
 }
+.searchFriend {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: stretch;
+}
+.searchFriend h4 {
+  display: flex;
+  justify-content: center;
+}
+.form-control {
+  width: 25%;
+}
+.searchresults {
+  background-color: #af40ff;
+}
+.seperateFriend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: stretch;
+  height: 50vh !important;
+  overflow-y: auto; /* Scroll bar'ı sadece gerektiğinde göster */
+}
+.seperateFriend1 {
+  width: 45%;
+  background-color: hsl(267, 30%, 68%);
+  border-radius: 30px;
+}
+.seperateFriend2 {
+  width: 45%;
+  background-color: hsl(267, 30%, 68%);
+  border-radius: 30px;
+}
