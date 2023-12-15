@@ -24,24 +24,27 @@
           (request.receiverUsername === userInfo.username) { %>
           <!-- Sadece istek alan kişiye göster -->
           <form
-            action="/acceptFriendRequest/username/senderUsername/<%= request.requestID %>"
+            action="/acceptFriendRequest/<%= userInfo.username %>/<%= request.senderUsername %>/<%= request.requestID %>"
             method="get"
           >
             <button type="submit">Kabul Et</button>
           </form>
           <form
-            action="/rejectFriendRequest/<%= request.requestID %>"
+            action="/rejectFriendRequest/<%= userInfo.username %>/<%= request.senderUsername %>/<%= request.requestID %>"
             method="get"
           >
             <button type="submit">Reddet</button>
           </form>
-          <% } else if (request.senderUsername === userInfo.username) { %>
+          <% }else if (request.receiverUsername === userInfo.username) { %>
+
           <!-- Sadece istek gönderen kişiye göster -->
           <form
-            action="/cancelFriendRequest/<%= request.requestID %>"
+            action="/cancelFriendRequest/<%= userInfo.username %>/<%= request.receiverUsername %>/<%= request.requestID %>"
             method="get"
           >
             <button type="submit">İsteği Geri Çek</button>
+            <% console.log("request.senderUsername: "+ request.senderUsername);
+            %> <% console.log("userInfo.username: "+ userInfo.username); %>
           </form>
           <% } %> <% } else if (request.status === 'accepted') { %> <%=
           request.senderUsername %> ile arkadaş oldunuz. <% } %>

@@ -224,8 +224,10 @@ router.get(
                 console.error("Add Friendship Query Error: ", friendshipErr);
                 res.status(500).send("Internal Server Error");
               } else {
+                console.log("arkadaş eklendi");
                 // Arkadaşlık başarıyla eklendi.
                 // İstersen burada başka işlemler de yapabilirsin.
+                res.redirect(`/users/notification/${acceptUserName}`);
               }
             }
           );
@@ -235,42 +237,63 @@ router.get(
   }
 );
 
-router.get("/rejectFriendRequest/:requestID", (req, res) => {
-  const requestID = req.params.requestID;
+router.get(
+  "/rejectFriendRequest/:username/:senderUsername/:requestID",
+  (req, res) => {
+    const requestID = req.params.requestID;
+    const username = req.params.username;
+    const senderUsername = req.params.senderUsername; // Bu satırı ekledik
+    console.log("Reddet'e girdi");
 
-  // Arkadaşlık isteğini reddetme işlemini gerçekleştir
-  const rejectFriendRequestQuery = "DELETE FROM friendreq WHERE requestID = ?";
+    // Arkadaşlık isteğini reddetme işlemini gerçekleştir
+    const rejectFriendRequestQuery =
+      "UPDATE friendreq SET status = 'rejected' WHERE senderUsername = ? AND receiverUsername = ?";
 
-  dbConnection.query(rejectFriendRequestQuery, [requestID], (err, results) => {
-    if (err) {
-      console.error("Reject Friend Request Query Error: ", err);
-      res.status(500).send("Internal Server Error");
-    } else {
-      // Bildirim ile kullanıcıyı bilgilendir
-      res.locals.successMessage = "Arkadaşlık isteği başarıyla reddedildi.";
-      res.redirect(`/users/notification/${username}`);
-    }
-  });
-});
+    dbConnection.query(
+      rejectFriendRequestQuery,
+      [senderUsername, username],
+      (err, results) => {
+        if (err) {
+          console.error("Arkadaşlık İsteği Reddetme Sorgu Hatası: ", err);
+          res.status(500).send("İç Sunucu Hatası");
+        } else {
+          // Kullanıcıyı bilgilendir
+          res.locals.successMessage = "Arkadaşlık isteği başarıyla reddedildi.";
+          res.redirect(`/users/notification/${username}`);
+        }
+      }
+    );
+  }
+);
 
-router.get("/cancelFriendRequest/:requestID", (req, res) => {
-  const requestID = req.params.requestID;
+router.get(
+  "/cancelFriendRequest/:username/:senderUsername/:requestID",
+  (req, res) => {
+    const requestID = req.params.requestID;
+    const username = req.params.username;
+    const senderUsername = req.params.senderUsername; // Bu satırı ekledik
+    console.log("cancel'e girdi");
+    // Gönderilen arkadaşlık isteğini iptal etme işlemini gerçekleştir
+    const cancelFriendRequestQuery =
+      "DELETE FROM friendreq WHERE senderUsername = username AND receiverUsername = senderUsername AND status = 'pending'";
 
-  // Gönderilen arkadaşlık isteğini iptal etme işlemini gerçekleştir
-  const cancelFriendRequestQuery = "DELETE FROM friendreq WHERE requestID = ?";
-
-  dbConnection.query(cancelFriendRequestQuery, [requestID], (err, results) => {
-    if (err) {
-      console.error("Cancel Friend Request Query Error: ", err);
-      res.status(500).send("Internal Server Error");
-    } else {
-      // Bildirim ile kullanıcıyı bilgilendir
-      res.locals.successMessage =
-        "Gönderilen arkadaşlık isteği başarıyla iptal edildi.";
-      res.redirect(`/users/notification/${username}`);
-    }
-  });
-});
+    dbConnection.query(
+      cancelFriendRequestQuery,
+      [requestID],
+      (err, results) => {
+        if (err) {
+          console.error("Cancel Friend Request Query Error: ", err);
+          res.status(500).send("Internal Server Error");
+        } else {
+          // Bildirim ile kullanıcıyı bilgilendir
+          res.locals.successMessage =
+            "Gönderilen arkadaşlık isteği başarıyla iptal edildi.";
+          res.redirect(`/users/notification/${username}`);
+        }
+      }
+    );
+  }
+);
 
 router.get("/users/notification/:username", checkAuth, (req, res) => {
   const requestedUsername = req.params.username;
