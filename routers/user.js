@@ -2,6 +2,7 @@ const express = require("express");
 const session = require("express-session");
 const passport = require("passport");
 const path = require("path");
+const notiflix = require("notiflix"); // Notiflix modülünü ekledik
 const dbConnection = require("../db");
 
 const router = express.Router();
@@ -15,19 +16,57 @@ const checkAuth = (req, res, next) => {
     res.redirect("/login");
   }
 };
-
-router.get("/sendFriendRequest/:name/:username", checkAuth, (req, res) => {
+// Arkadaşlık isteği gönderildikten sonra Notiflix kullanımı
+router.get("/sendFriendRequest/:name/:username", (req, res) => {
   const { name, username } = req.params;
+  const senderUsername = name;
+  const receiverUsername = username;
 
-  // Burada arkadaşlık isteği gönderme işlemini gerçekleştirebilirsin
-  // Örneğin, bir veritabanına kayıt ekleyebilir veya başka bir işlem yapabilirsin
-  console.log(`Arkadaşlık isteği gönderildi: ${name}  (${username})`);
-
-  // İstek gönderildi mesajını görüntüle
-  // res.render("users/searchResults", { results: [] }); // Değiştir: results yerine boş bir dizi gönderiyoruz
-
-  // İstek gönderildikten sonra tekrar network sayfasına yönlendir
-  res.redirect(`/users/network/${name}`);
+  // Kontrol 1: Aynı kullanıcıya daha önce arkadaşlık isteği gönderilmiş mi?
+  const checkPreviousRequestQuery =
+    "SELECT * FROM dbname.friendreq WHERE senderUsername = ? AND receiverUsername = ?";
+  dbConnection.query(
+    checkPreviousRequestQuery,
+    [senderUsername, receiverUsername],
+    (checkErr, checkResults) => {
+      if (checkErr) {
+        console.error("MySQL Query Error: ", checkErr);
+        res.status(500).send("Internal Server Error");
+      } else {
+        if (checkResults.length > 0) {
+          // Kullanıcıya daha önce arkadaşlık isteği gönderilmişse, işlemi gerçekleştirme
+          console.log("Bu kullanıcıya daha önce istek gönderilmiş.");
+          res.redirect(`/users/network/${name}`);
+        } else {
+          // Kontrol 2: Kendine arkadaşlık isteği göndermeye çalışıyor mu?
+          if (senderUsername === receiverUsername) {
+            // Kendine arkadaşlık isteği gönderiyorsa, işlemi gerçekleştirme
+            console.log("Kendine arkadaşlık isteği gönderilemez.");
+            res.redirect(`/users/network/${name}`);
+          } else {
+            // Yeni arkadaşlık isteği eklemek için veritabanına ekleme işlemi yap
+            const addFriendRequestQuery =
+              "INSERT INTO dbname.friendreq (senderUsername, receiverUsername) VALUES (?, ?)";
+            dbConnection.query(
+              addFriendRequestQuery,
+              [senderUsername, receiverUsername],
+              (err, results) => {
+                if (err) {
+                  console.error("MySQL Query Error: ", err);
+                  res.status(500).send("Internal Server Error");
+                } else {
+                  // Notiflix ile bildirim göster
+                  res.locals.successMessage =
+                    "Arkadaşlık isteği başarıyla gönderildi.";
+                  res.redirect(`/users/network/${name}`);
+                }
+              }
+            );
+          }
+        }
+      }
+    }
+  );
 });
 
 router.get("/users/search", (req, res) => {
@@ -154,6 +193,148 @@ router.get("/users/network/:username", checkAuth, (req, res) => {
     }
   });
 });
+router.get(
+  "/acceptFriendRequest/:username/:senderUsername/:requestID",
+  (req, res) => {
+    const requestID = req.params.requestID;
+    const { username, senderUsername } = req.params;
+    console.log("isteği kabul eden: " + username);
+    console.log("isteği başta atan : " + senderUsername);
+    const acceptUserName = username;
+    // Arkadaşlık isteğini kabul etme işlemini gerçekleştir
+    const acceptFriendRequestQuery =
+      "UPDATE friendreq SET status = 'accepted' WHERE requestID = ?";
+
+    dbConnection.query(
+      acceptFriendRequestQuery,
+      [requestID],
+      (err, results) => {
+        if (err) {
+          console.error("Accept Friend Request Query Error: ", err);
+          res.status(500).send("Internal Server Error");
+        } else {
+          // Arkadaşlık isteği kabul edildi, şimdi friendships tablosuna ekle
+          const addFriendshipQuery =
+            "INSERT INTO dbname.friendships (user1Username, user2Username) VALUES (?, ?)";
+          dbConnection.query(
+            addFriendshipQuery,
+            [username, senderUsername],
+            (friendshipErr, friendshipResults) => {
+              if (friendshipErr) {
+                console.error("Add Friendship Query Error: ", friendshipErr);
+                res.status(500).send("Internal Server Error");
+              } else {
+                // Arkadaşlık başarıyla eklendi.
+                // İstersen burada başka işlemler de yapabilirsin.
+              }
+            }
+          );
+        }
+      }
+    );
+  }
+);
+
+router.get("/rejectFriendRequest/:requestID", (req, res) => {
+  const requestID = req.params.requestID;
+
+  // Arkadaşlık isteğini reddetme işlemini gerçekleştir
+  const rejectFriendRequestQuery = "DELETE FROM friendreq WHERE requestID = ?";
+
+  dbConnection.query(rejectFriendRequestQuery, [requestID], (err, results) => {
+    if (err) {
+      console.error("Reject Friend Request Query Error: ", err);
+      res.status(500).send("Internal Server Error");
+    } else {
+      // Bildirim ile kullanıcıyı bilgilendir
+      res.locals.successMessage = "Arkadaşlık isteği başarıyla reddedildi.";
+      res.redirect(`/users/notification/${username}`);
+    }
+  });
+});
+
+router.get("/cancelFriendRequest/:requestID", (req, res) => {
+  const requestID = req.params.requestID;
+
+  // Gönderilen arkadaşlık isteğini iptal etme işlemini gerçekleştir
+  const cancelFriendRequestQuery = "DELETE FROM friendreq WHERE requestID = ?";
+
+  dbConnection.query(cancelFriendRequestQuery, [requestID], (err, results) => {
+    if (err) {
+      console.error("Cancel Friend Request Query Error: ", err);
+      res.status(500).send("Internal Server Error");
+    } else {
+      // Bildirim ile kullanıcıyı bilgilendir
+      res.locals.successMessage =
+        "Gönderilen arkadaşlık isteği başarıyla iptal edildi.";
+      res.redirect(`/users/notification/${username}`);
+    }
+  });
+});
+
+router.get("/users/notification/:username", checkAuth, (req, res) => {
+  const requestedUsername = req.params.username;
+
+  // Arkadaşlık isteklerini sorgula
+  const friendRequestQuery =
+    "SELECT * FROM friendreq WHERE receiverUsername = ? AND status = 'pending'";
+
+  dbConnection.query(
+    friendRequestQuery,
+    [requestedUsername],
+    (friendReqErr, friendReqResults) => {
+      if (friendReqErr) {
+        console.error("Friend Request Query Error: ", friendReqErr);
+        res.status(500).send("Internal Server Error");
+      } else {
+        const friendRequests = friendReqResults;
+
+        // Bildirim var mı kontrolü
+        const hasNotification = friendRequests.length > 0;
+
+        // Şimdi requestedUsername ile veritabanından ilgili kullanıcıyı sorgulayabilirsiniz.
+        const userQuery = "SELECT * FROM users WHERE username = ?";
+
+        dbConnection.query(
+          userQuery,
+          [requestedUsername],
+          (userErr, userResults) => {
+            if (userErr) {
+              console.error("User Query Error: ", userErr);
+              res.status(500).send("Internal Server Error");
+            } else {
+              if (userResults.length > 0) {
+                // Kullanıcı bulundu, bilgileri userInfo'ye ekle
+                const userInfo = {
+                  id: userResults[0].id,
+                  username: userResults[0].username,
+                  password: userResults[0].password,
+                  name: userResults[0].name,
+                  surname: userResults[0].surname,
+                };
+
+                res.render("users/notification", {
+                  currentPage: "/notification",
+                  userInfo,
+                  friendRequests,
+                  hasNotification,
+                });
+              } else {
+                // Kullanıcı bulunamadı
+                res.render("users/dashboard", {
+                  currentPage: "/dashboard",
+                  userInfo: null,
+                  friendRequests: [],
+                  hasNotification: false,
+                });
+              }
+            }
+          }
+        );
+      }
+    }
+  );
+});
 
 router.get("/login", (req, res) => {
   res.render("users/login", { currentPage: "/login" });
@@ -220,34 +401,63 @@ router.use("/profile/user/:username", checkAuth, (req, res) => {
 router.get("/dashboard/user/:username", checkAuth, (req, res) => {
   const requestedUsername = req.params.username;
 
-  // Şimdi requestedUsername ile veritabanından ilgili kullanıcıyı sorgulayabilirsiniz.
-  const query = "SELECT * FROM users WHERE username = ?";
+  // Arkadaşlık isteklerini sorgula
+  const friendRequestQuery =
+    "SELECT COUNT(*) AS friendRequestCount FROM friendreq WHERE receiverUsername = ? AND status = 'pending'";
 
-  dbConnection.query(query, [requestedUsername], (err, results) => {
-    if (err) {
-      console.error("MySQL Query Error: ", err);
-      res.status(500).send("Internal Server Error");
-    } else {
-      if (results.length > 0) {
-        // Kullanıcı bulundu, bilgileri userInfo'ye ekle
-        const userInfo = {
-          id: results[0].id,
-          username: results[0].username,
-          password: results[0].password,
-          name: results[0].name,
-          surname: results[0].surname,
-        };
-
-        res.render("users/dashboard", { currentPage: "/dashboard", userInfo });
+  dbConnection.query(
+    friendRequestQuery,
+    [requestedUsername],
+    (friendReqErr, friendReqResults) => {
+      if (friendReqErr) {
+        console.error("Friend Request Query Error: ", friendReqErr);
+        res.status(500).send("Internal Server Error");
       } else {
-        // Kullanıcı bulunamadı
-        res.render("users/dashboard", {
-          currentPage: "/dashboard",
-          userInfo: null,
-        });
+        const friendRequestCount = friendReqResults[0].friendRequestCount;
+
+        // Şimdi requestedUsername ile veritabanından ilgili kullanıcıyı sorgulayabilirsiniz.
+        const userQuery = "SELECT * FROM users WHERE username = ?";
+
+        dbConnection.query(
+          userQuery,
+          [requestedUsername],
+          (userErr, userResults) => {
+            if (userErr) {
+              console.error("User Query Error: ", userErr);
+              res.status(500).send("Internal Server Error");
+            } else {
+              if (userResults.length > 0) {
+                // Kullanıcı bulundu, bilgileri userInfo'ye ekle
+                const userInfo = {
+                  id: userResults[0].id,
+                  username: userResults[0].username,
+                  password: userResults[0].password,
+                  name: userResults[0].name,
+                  surname: userResults[0].surname,
+                };
+
+                // Friend request sayısına göre hasNotification değerini ayarla
+                const hasNotification = friendRequestCount > 0;
+
+                res.render("users/dashboard", {
+                  currentPage: "/dashboard",
+                  userInfo,
+                  hasNotification,
+                });
+              } else {
+                // Kullanıcı bulunamadı
+                res.render("users/dashboard", {
+                  currentPage: "/dashboard",
+                  userInfo: null,
+                  hasNotification: false,
+                });
+              }
+            }
+          }
+        );
       }
     }
-  });
+  );
 });
 
 router.use("/signIn", (req, res) => {

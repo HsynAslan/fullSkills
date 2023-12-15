@@ -8,7 +8,9 @@
       <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css" />
       <link rel="stylesheet" type="text/css" href="/css/style.css" />
       <link rel="stylesheet" href="dist/notiflix-X.X.X.min.css" />
-      <title><%= userInfo.name %> Dashboard</title>
+      <title>
+        <%= userInfo ? userInfo.name + ' Dashboard' : 'Dashboard' %>
+      </title>
     </head>
   </head>
   <body class="loginBody">

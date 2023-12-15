@@ -3,6 +3,8 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const dbConnection = require("./db");
 const session = require("express-session");
+const notiflix = require("notiflix");
+
 const app = express();
 const port = 3000;
 

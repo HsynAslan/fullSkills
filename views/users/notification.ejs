@@ -1,0 +1,54 @@
+<!-- dashboard.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+    <link rel="stylesheet" href="dist/notiflix-X.X.X.min.css" />
+    <title><%= userInfo.name %> Notification</title>
+  </head>
+  <body class="loginBody">
+    <%- include('../partials/userNavbar') %>
+    <div class="mt-5 ms-4 me-4 notificationBox">
+      <!-- notification.ejs -->
+
+      <h2>Arkadaşlık İstekleri</h2>
+
+      <ul>
+        <% friendRequests.forEach(request => { %>
+        <li>
+          <% if (request.status === 'pending') { %> <%= request.senderUsername
+          %> sana arkadaşlık isteği gönderdi. (Beklemede) <% if
+          (request.receiverUsername === userInfo.username) { %>
+          <!-- Sadece istek alan kişiye göster -->
+          <form
+            action="/acceptFriendRequest/username/senderUsername/<%= request.requestID %>"
+            method="get"
+          >
+            <button type="submit">Kabul Et</button>
+          </form>
+          <form
+            action="/rejectFriendRequest/<%= request.requestID %>"
+            method="get"
+          >
+            <button type="submit">Reddet</button>
+          </form>
+          <% } else if (request.senderUsername === userInfo.username) { %>
+          <!-- Sadece istek gönderen kişiye göster -->
+          <form
+            action="/cancelFriendRequest/<%= request.requestID %>"
+            method="get"
+          >
+            <button type="submit">İsteği Geri Çek</button>
+          </form>
+          <% } %> <% } else if (request.status === 'accepted') { %> <%=
+          request.senderUsername %> ile arkadaş oldunuz. <% } %>
+        </li>
+        <% }) %>
+      </ul>
+    </div>
+    <%- include('../partials/foot') %>
+  </body>
+</html>

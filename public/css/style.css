@@ -230,3 +230,9 @@
   background-color: hsl(267, 30%, 68%);
   border-radius: 30px;
 }
+.notificationBox {
+  background-color: #5b42f3;
+  position: absolute;
+  width: 90%;
+  height: 70%;
+}
