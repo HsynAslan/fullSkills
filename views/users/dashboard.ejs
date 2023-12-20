@@ -25,10 +25,9 @@
             <div class="mt-4 mb-5">
               <label for="skill" class="me-3">Skill:</label>
               <select name="skill" id="skill" class="d-Skill">
-                <!-- Burada database'den gelen skill adlarını döngü ile ekleyebilirsin -->
-                <option value="skill1">Skill 1</option>
-                <option value="skill2">Skill 2</option>
-                <!-- ... Diğer skill adları -->
+                <% skills.forEach(skill => { %>
+                <option value="<%= skill %>"><%= skill %></option>
+                <% }); %>
               </select>
             </div>
             <div class="mb-2">
@@ -53,12 +52,14 @@
             <label for="withWhom">Kimle:</label>
             <div class="mb-5 mt-2">
               <select name="withWhom" id="withWhom">
-                <!-- Burada database'den gelen arkadaş bilgilerini döngü ile ekleyebilirsin -->
-                <option value="friend1">Arkadaş 1</option>
-                <option value="friend2">Arkadaş 2</option>
-                <!-- ... Diğer arkadaş bilgileri -->
+                <% friends.forEach(friend => { %>
+                <option value="<%= friend.name %> <%= friend.surname %>">
+                  <%= friend.name %> <%= friend.surname %>
+                </option>
+                <% }); %>
               </select>
             </div>
+
             <div class="">
               <label for="rating">Puan:</label>
               <input type="number" name="rating" id="rating" min="0" max="10" />
