@@ -1,0 +1,59 @@
+<!-- dashboard.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css" />
+      <link rel="stylesheet" type="text/css" href="/css/style.css" />
+      <link rel="stylesheet" href="dist/notiflix-X.X.X.min.css" />
+      <title><%= userInfo ? userInfo.name + ' Team' : 'Team' %></title>
+    </head>
+  </head>
+  <body class="loginBody">
+    <%- include('../partials/userNavbar') %>
+    <div class="">
+      <% if (userInfo) { %>
+      <!-- Diğer kullanıcı bilgilerini de burada kullanabilirsin -->
+      <div class="teamCreBox">
+        <div class="centerHeader"><h3>Takım Oluşturma</h3></div>
+
+        <div class="teamCreSelectFriends">
+          <div class="centerHeader">
+            <h5>
+              Lütfen Takım Oluşturmak İstediğiniz Arkadaş(ların)ızı Seçiniz
+            </h5>
+          </div>
+          <form action="/createTeam/<%= userInfo.username %>" method="post">
+            <div class="selectFriends">
+              <% friends.forEach(friend => { %>
+              <label>
+                <input
+                  type="checkbox"
+                  name="selectedFriends"
+                  value="<%= friend.name %> <%= friend.surname %>"
+                />
+                <%= friend.name %> <%= friend.surname %>
+              </label>
+              <br />
+              <% }); %>
+            </div>
+            <div class="mt-5">
+              <label for="teamName">Takım İsmi:</label>
+              <input type="text" name="teamName" id="teamName" required />
+            </div>
+            <div class="mt-3">
+              <button type="submit">Takımı Oluştur</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <% } else { %>
+      <p>Giriş yapmış bir kullanıcı bulunamadı.</p>
+      <% } %>
+    </div>
+    <%- include('../partials/foot') %>
+    <script src="dist/notiflix-X.X.X.min.js"></script>
+  </body>
+</html>

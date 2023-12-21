@@ -236,3 +236,34 @@
   width: 90%;
   height: 70%;
 }
+.Button404 {
+  border: none;
+  background-color: white;
+}
+.teamCreBox {
+  margin-top: 5vh;
+  margin-left: 2vh;
+  margin-right: 2vh;
+  width: 98%;
+  height: 70vh;
+  background-color: #af40ff;
+}
+.centerHeader {
+  display: flex;
+  justify-content: center;
+}
+.teamCreSelectFriends {
+  margin-left: 5vh;
+  margin-top: 5vh;
+  background-color: #b79fd4;
+  width: 40%;
+  height: 40vh;
+}
+.selectFriends {
+  padding-left: 3vh;
+  padding-top: 2vh;
+  padding-bottom: 2vh;
+  background-color: #dcbfff;
+  max-height: 15vh;
+  overflow-y: auto; /* Scroll bar'ı sadece gerektiğinde göster */
+}

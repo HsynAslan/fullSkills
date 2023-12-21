@@ -6,12 +6,54 @@
     <link rel="stylesheet" type="text/css" href="/css/style.css" />
   </head>
   <body>
-    <%- include('../partials/nav') %>
-    <img src="images/graduate.jpg" alt="" class="imgDiv" />
-    <%- include('../partials/foot') %>
+    <!-- include('../partials/nav')  -->
+    <!-- <img src="images/graduate.jpg" alt="" class="imgDiv" /> -->
+    <!-- include('../partials/foot') %> -->
+    <div class="d-flex align-items-center justify-content-center vh-100">
+      <div class="text-center row">
+        <div class="mb-4"><h1>Full Skill Warning !!!</h4></div>
+        <div class="col-md-6">
+          <img
+            src="https://cdn.pixabay.com/photo/2017/03/09/12/31/error-2129569__340.jpg"
+            alt=""
+            class="img-fluid"
+          />
+        </div>
+        <div class="col-md-6 mt-5">
+          <p class="fs-3">
+            <span class="text-danger">Opps!</span> Page not found.
+          </p>
+          <p class="lead">The page you’re looking for doesn’t exist.</p>
+          <button onclick="logout()" class="Button404"><a href="/login" class="btn btn-primary">Go Home</a></button>
+          
+        </div>
+      </div>
+    </div>
     <script
       src="https://kit.fontawesome.com/d497048b92.js"
       crossorigin="anonymous"
-    ></script>
+    >function logout() {
+      // Çıkış yap butonuna basıldığında yapılacak işlemler
+      // Örneğin, isLogin değerini false yap ve /login sayfasına yönlendir
+      // Bu işlemleri yapabilmek için uygun bir endpoint veya fonksiyon tanımlaman gerekebilir
+      // Bu sadece bir örnektir, gerçek uygulamaya uygun şekilde uyarlamalısın
+      fetch("/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isLogin: false }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          // Başarılı şekilde çıkış yapıldığında /login sayfasına yönlendir
+          if (data.success) {
+            window.location.href = "/login";
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }</script>
   </body>
 </html>
