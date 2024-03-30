@@ -14,9 +14,21 @@
     <% include('../partials/nav') %>
     <div class="center-bp loginBoxAbout flexToBottom">
       <% if (userInfo) { %>
-      <h2>Çıkış için butona basın <%= userInfo.name %></h2>
+      <h2>
+        Çıkış için butona basın <%= userInfo.username %>
+        <button onclick="logout()">Çıkış Yap</button>
+      </h2>
       <!-- Diğer kullanıcı bilgilerini de burada kullanabilirsin -->
-      <button onclick="logout()">Çıkış Yap</button>
+
+      <h2>
+        arkadaşlık:
+        <ul>
+          <% friends.forEach(function(friend) { %>
+          <li><%= friend.name %> <%= friend.surname %></li>
+          <% }); %>
+        </ul>
+      </h2>
+
       <% } else { %>
       <p>Giriş yapmış bir kullanıcı bulunamadı.</p>
       <% } %>

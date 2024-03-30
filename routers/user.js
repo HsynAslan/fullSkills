@@ -7,6 +7,7 @@ const dbConnection = require("../db");
 
 const router = express.Router();
 var isLogin = false;
+
 const checkAuth = (req, res, next) => {
   if (req.session.userInfo) {
     // Oturumda kullanıcı bilgileri varsa devam et
@@ -16,6 +17,7 @@ const checkAuth = (req, res, next) => {
     res.redirect("/login");
   }
 };
+
 // Arkadaşlık isteği gönderildikten sonra Notiflix kullanımı
 router.get("/sendFriendRequest/:name/:username", (req, res) => {
   const { name, username } = req.params;
@@ -388,11 +390,26 @@ router.post("/login", (req, res) => {
 router.use("/about", (req, res) => {
   res.render(path.join("users/about"), { currentPage: "/about" });
 });
+
 router.use("/profile/user/:username", checkAuth, (req, res) => {
   const requestedUsername = req.params.username;
 
-  // Şimdi requestedUsername ile veritabanından ilgili kullanıcıyı sorgulayabilirsiniz.
-  const query = "SELECT * FROM users WHERE username = ?";
+  // Kullanıcının bilgilerini almak için sorgu
+  const query = "SELECT id, username FROM users WHERE username = ?";
+  // Arkadaşların bilgilerini almak için sorgu
+  const friendQuery = `
+  SELECT u.name, u.surname
+  FROM (
+      SELECT 
+          CASE 
+              WHEN user1Username = ? THEN user2Username 
+              ELSE user1Username 
+          END AS friend_username
+      FROM friendships
+      WHERE user1Username = ? OR user2Username = ?
+  ) AS friends
+  JOIN users u ON friends.friend_username = u.username;
+  `;
 
   dbConnection.query(query, [requestedUsername], (err, results) => {
     if (err) {
@@ -404,17 +421,31 @@ router.use("/profile/user/:username", checkAuth, (req, res) => {
         const userInfo = {
           id: results[0].id,
           username: results[0].username,
-          password: results[0].password,
-          name: results[0].name,
-          surname: results[0].surname,
         };
 
-        res.render("users/profile", { currentPage: "/profile", userInfo });
+        dbConnection.query(
+          friendQuery,
+          [requestedUsername, requestedUsername, requestedUsername],
+          (friendErr, friendResults) => {
+            if (friendErr) {
+              console.error("Friendship Query Error: ", friendErr);
+              res.status(500).send("Internal Server Error");
+            } else {
+              // Kullanıcı bilgilerini ve arkadaşlık bilgisini gönder
+              res.render("users/profile", {
+                currentPage: "/profile",
+                userInfo,
+                friends: friendResults,
+              });
+            }
+          }
+        );
       } else {
         // Kullanıcı bulunamadı
         res.render("users/profile", {
           currentPage: "/profile",
           userInfo: null,
+          friends: null,
         });
       }
     }
