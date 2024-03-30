@@ -8,6 +8,10 @@
       <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css" />
       <link rel="stylesheet" type="text/css" href="/css/style.css" />
       <title>Profile</title>
+      <link
+        rel="stylesheet"
+        href="path/to/font-awesome/css/font-awesome.min.css"
+      />
     </head>
   </head>
   <body class="loginBody">
@@ -24,7 +28,13 @@
         arkadaşlık:
         <ul>
           <% friends.forEach(function(friend) { %>
-          <li><%= friend.name %> <%= friend.surname %></li>
+          <li>
+            <%= friend.name %> <%= friend.surname %>
+            <a
+              href="/removeFriend/<%= userInfo.username %>/<%= friend.friendUsername %>"
+              ><i class="fa-solid fa-delete-left"></i
+            ></a>
+          </li>
           <% }); %>
         </ul>
       </h2>
@@ -59,5 +69,14 @@
           });
       }
     </script>
+    <script
+      src="https://kit.fontawesome.com/d497048b92.js"
+      crossorigin="anonymous"
+    ></script>
+    <!-- <script>
+      function friendRemove(user, removeUser) {
+        res.redirect(`/removeFriend/user/removeUser`);
+      }
+    </script> -->
   </body>
 </html>

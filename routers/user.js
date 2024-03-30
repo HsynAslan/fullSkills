@@ -391,6 +391,31 @@ router.use("/about", (req, res) => {
   res.render(path.join("users/about"), { currentPage: "/about" });
 });
 
+// Arkadaşı listeden çıkarma işlemi
+router.get("/removeFriend/:username/:deleteUsername", (req, res) => {
+  const { username, deleteUsername } = req.params;
+  const loggedInUsername = username;
+  const friendToRemove = deleteUsername;
+
+  // Arkadaşı listeden çıkarma sorgusu
+  const removeFriendQuery =
+    "DELETE FROM friendships WHERE (user1Username = ? AND user2Username = ?) OR (user1Username = ? AND user2Username = ?)";
+  dbConnection.query(
+    removeFriendQuery,
+    [loggedInUsername, friendToRemove, friendToRemove, loggedInUsername],
+    (err, results) => {
+      if (err) {
+        console.error("MySQL Query Error: ", err);
+        res.status(500).send("Internal Server Error");
+      } else {
+        // Bildirim gösterimi
+        // res.status(200).send("Arkadaş başarıyla listeden çıkarıldı.");
+        res.redirect(`/profile/user/${loggedInUsername}`);
+      }
+    }
+  );
+});
+
 router.use("/profile/user/:username", checkAuth, (req, res) => {
   const requestedUsername = req.params.username;
 
@@ -398,17 +423,21 @@ router.use("/profile/user/:username", checkAuth, (req, res) => {
   const query = "SELECT id, username FROM users WHERE username = ?";
   // Arkadaşların bilgilerini almak için sorgu
   const friendQuery = `
-  SELECT u.name, u.surname
-  FROM (
+    SELECT 
+      friends.friend_username AS friendUsername,
+      u.name,
+      u.surname,
+      u.username
+    FROM (
       SELECT 
-          CASE 
-              WHEN user1Username = ? THEN user2Username 
-              ELSE user1Username 
-          END AS friend_username
+        CASE 
+          WHEN user1Username = ? THEN user2Username 
+          ELSE user1Username 
+        END AS friend_username
       FROM friendships
       WHERE user1Username = ? OR user2Username = ?
-  ) AS friends
-  JOIN users u ON friends.friend_username = u.username;
+    ) AS friends
+    JOIN users u ON friends.friend_username = u.username;
   `;
 
   dbConnection.query(query, [requestedUsername], (err, results) => {
