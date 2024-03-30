@@ -397,21 +397,43 @@ router.get("/removeFriend/:username/:deleteUsername", (req, res) => {
   const loggedInUsername = username;
   const friendToRemove = deleteUsername;
 
-  // Arkadaşı listeden çıkarma sorgusu
-  const removeFriendQuery =
+  // Arkadaşı listeden çıkarma sorgusu (friendships tablosu)
+  const removeFriendshipQuery =
     "DELETE FROM friendships WHERE (user1Username = ? AND user2Username = ?) OR (user1Username = ? AND user2Username = ?)";
+
+  // Arkadaşı listeden çıkarma sorgusu (friendreq tablosu)
+  const removeFriendRequestQuery =
+    "DELETE FROM friendreq WHERE (senderUsername = ? AND receiverUsername = ?) OR (senderUsername = ? AND receiverUsername = ?)";
+
+  // Arkadaşlıktan çıkarma işlemlerini sırasıyla gerçekleştir
   dbConnection.query(
-    removeFriendQuery,
+    removeFriendshipQuery,
     [loggedInUsername, friendToRemove, friendToRemove, loggedInUsername],
-    (err, results) => {
-      if (err) {
-        console.error("MySQL Query Error: ", err);
+    (friendshipErr, friendshipResults) => {
+      if (friendshipErr) {
+        console.error("Friendship Removal Query Error: ", friendshipErr);
         res.status(500).send("Internal Server Error");
-      } else {
-        // Bildirim gösterimi
-        // res.status(200).send("Arkadaş başarıyla listeden çıkarıldı.");
-        res.redirect(`/profile/user/${loggedInUsername}`);
+        return;
       }
+
+      // friendreq tablosundan satırları silme işlemi
+      dbConnection.query(
+        removeFriendRequestQuery,
+        [loggedInUsername, friendToRemove, friendToRemove, loggedInUsername],
+        (friendRequestErr, friendRequestResults) => {
+          if (friendRequestErr) {
+            console.error(
+              "Friend Request Removal Query Error: ",
+              friendRequestErr
+            );
+            res.status(500).send("Internal Server Error");
+            return;
+          }
+
+          // Başarılı bir şekilde tamamlandığında başarılı bir yanıt döndür
+          res.redirect(`/profile/user/${loggedInUsername}`);
+        }
+      );
     }
   );
 });
