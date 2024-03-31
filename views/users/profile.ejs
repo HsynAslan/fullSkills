@@ -15,7 +15,7 @@
     </head>
   </head>
   <body class="loginBody">
-    <% include('../partials/nav') %>
+    <%- include('../partials/userNavbar') %>
     <div class="center-bp loginBoxAbout flexToBottom">
       <% if (userInfo) { %>
       <h2>
@@ -23,7 +23,7 @@
         <button onclick="logout()">Çıkış Yap</button>
       </h2>
       <!-- Diğer kullanıcı bilgilerini de burada kullanabilirsin -->
-
+      isim: <%= userInfo.name %>
       <h2>
         arkadaşlık:
         <ul>
@@ -39,11 +39,26 @@
         </ul>
       </h2>
 
+
+<div>
+
+
+
+
+
+
+
+</div>
+
+<div>
+  <h6>---cv indirme en son---</h3>
+</div>      
+
       <% } else { %>
       <p>Giriş yapmış bir kullanıcı bulunamadı.</p>
       <% } %>
     </div>
-    <% include('../partials/foot') %>
+    <%- include('../partials/foot') %>
     <script>
       function logout() {
         // Çıkış yap butonuna basıldığında yapılacak işlemler

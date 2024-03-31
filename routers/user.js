@@ -482,11 +482,18 @@ router.use("/profile/user/:username", checkAuth, (req, res) => {
               console.error("Friendship Query Error: ", friendErr);
               res.status(500).send("Internal Server Error");
             } else {
+              let isTeamLeader = false;
+              const loggedInUsername = req.session.userInfo.username;
+              if (requestedUsername === loggedInUsername) {
+                isTeamLeader = true;
+              }
+
               // Kullanıcı bilgilerini ve arkadaşlık bilgisini gönder
               res.render("users/profile", {
                 currentPage: "/profile",
                 userInfo,
                 friends: friendResults,
+                isTeamLeader: isTeamLeader,
               });
             }
           }
@@ -497,6 +504,7 @@ router.use("/profile/user/:username", checkAuth, (req, res) => {
           currentPage: "/profile",
           userInfo: null,
           friends: null,
+          isTeamLeader: false,
         });
       }
     }
@@ -696,17 +704,16 @@ router.get("/users/team/:username", checkAuth, (req, res) => {
 
         // Arkadaşları sorgula
         const friendsQuery = `
-          SELECT u.name, u.surname
-          FROM users u
-          JOIN friendships f ON u.username = f.user2Username
-          WHERE f.user1Username = ?
-          UNION
-          SELECT u.name, u.surname
-          FROM users u
-          JOIN friendships f ON u.username = f.user1Username
-          WHERE f.user2Username = ?;
-        `;
-
+  SELECT u.username, u.name, u.surname
+  FROM users u
+  JOIN friendships f ON u.username = f.user2Username
+  WHERE f.user1Username = ?
+  UNION
+  SELECT u.username, u.name, u.surname
+  FROM users u
+  JOIN friendships f ON u.username = f.user1Username
+  WHERE f.user2Username = ?;
+`;
         dbConnection.query(
           friendsQuery,
           [requestedUsername, requestedUsername],
@@ -716,9 +723,9 @@ router.get("/users/team/:username", checkAuth, (req, res) => {
               res.status(500).send("Internal Server Error");
             } else {
               const friends = friendsResults.map((friend) => ({
+                username: friend.username,
                 name: friend.name,
                 surname: friend.surname,
-                username: friend.username, // Eklenen satır
               }));
 
               res.render("users/teamCre", {
@@ -734,6 +741,63 @@ router.get("/users/team/:username", checkAuth, (req, res) => {
         res.status(404).send("Kullanıcı bulunamadı");
       }
     }
+  });
+});
+
+router.get("/users/team/:username/:name/:surname", checkAuth, (req, res) => {
+  const getUsername = req.params.username;
+  const getName = req.params.name;
+  const getSurname = req.params.surname;
+
+  // Takımın oluşturulduğu kullanıcıya ait tüm takımların bilgilerini almak için sorgu
+  const teamQuery = `
+    SELECT *
+    FROM team
+    WHERE createdByUsername = ?;
+  `;
+
+  // Üye olduğu takımların bilgilerini almak için yeni sorgu
+  const memberTeamsQuery = `
+    SELECT *
+    FROM team
+    WHERE member1Username = ? OR
+          member2Username = ? OR
+          member3Username = ? OR
+          member4Username = ? OR
+          member5Username = ?;
+  `;
+
+  dbConnection.query(teamQuery, [getUsername], (teamErr, teamResults) => {
+    if (teamErr) {
+      console.error("Team Query Error: ", teamErr);
+      return res.status(500).send("Internal Server Error");
+    }
+
+    // Üye olduğu takımların bilgilerini al
+    dbConnection.query(
+      memberTeamsQuery,
+      [getUsername, getUsername, getUsername, getUsername, getUsername],
+      (memberErr, memberTeamResults) => {
+        if (memberErr) {
+          console.error("Member Team Query Error: ", memberErr);
+          return res.status(500).send("Internal Server Error");
+        }
+
+        // Tüm takımların sonuçlarını birleştir
+        const allTeams = [...teamResults, ...memberTeamResults];
+
+        // Render the team page with data
+        res.render("users/team", {
+          currentPage: "/users/team",
+          userInfo: {
+            username: getUsername,
+            name: getName,
+            surname: getSurname,
+          },
+          teams: allTeams, // Tüm takım bilgilerini EJS dosyasına iletmek
+        });
+      }
+    );
   });
 });
 

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+    <link rel="stylesheet" href="dist/notiflix-X.X.X.min.css" />
+    <title><%= userInfo.name %> Team</title>
+  </head>
+  <body class="loginBody">
+    <% include('../partials/userNavbar') %> <% teams.forEach(team => { %>
+    <h2>Team Name: <%= team.teamName %></h2>
+    <p>Team Leader: <%= team.createdByUsername %></p>
+    <ul>
+      <% // Takım üyeleri için bir döngü %> <% for (let i = 1; i <= 5; i++) { %>
+      <% const memberUsername = team[`member${i}Username`]; %> <% if
+      (memberUsername) { %>
+      <li><%= memberUsername %></li>
+      <% } %> <% } %>
+    </ul>
+    <% }) %> <% include('../partials/foot') %>
+  </body>
+</html>

@@ -10,12 +10,23 @@
       href="/users/network/<%= userInfo.username %>"
       class="<%= currentPage === '/about' ? 'activeButton' : 'nav-link' %>"
       >Network</a
-    ><a
+    >
+    <a
+      href="/users/team/<%= userInfo.username %>/<%= userInfo.name %>/<%= userInfo.surname %>"
+      class="<%= currentPage === '/about' ? 'activeButton' : 'nav-link' %>"
+      >Team</a
+    >
+
+    <a
       href="/users/notification/<%= userInfo.username %>"
       class="<%= currentPage === '/about' ? 'activeButton' : 'nav-link' %>"
     >
       Notification
     </a>
-    <a href="/profile/user/<%= userInfo.username %> "><%= userInfo.name %></a>
+    <a
+      href="/profile/user/<%= userInfo.username %> "
+      class="<%= currentPage === '/about' ? 'activeButton' : 'nav-link' %>"
+      ><%= userInfo.name %></a
+    >
   </div>
 </div>
