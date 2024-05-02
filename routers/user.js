@@ -744,6 +744,32 @@ router.get("/users/team/:username", checkAuth, (req, res) => {
   });
 });
 
+router.post(
+  "/users/team/:teamId/member/:memberIndex/delete",
+  checkAuth,
+  (req, res) => {
+    const teamId = req.params.teamId;
+    const memberIndex = req.params.memberIndex;
+
+    // Veritabanında ilgili takımı ve üyeyi silme işlemi
+    const deleteMemberQuery = `
+    UPDATE team
+    SET member${memberIndex}Username = NULL
+    WHERE id = ?;
+  `;
+
+    dbConnection.query(deleteMemberQuery, [teamId], (err, result) => {
+      if (err) {
+        console.error("Delete Member Query Error: ", err);
+        return res.status(500).send("Internal Server Error");
+      }
+
+      // Başarılı bir şekilde üye silindiğini belirt
+      res.redirect(req.get("referer")); // Mevcut sayfaya yönlendir
+    });
+  }
+);
+
 router.get("/users/team/:username/:name/:surname", checkAuth, (req, res) => {
   const getUsername = req.params.username;
   const getName = req.params.name;
@@ -758,13 +784,12 @@ router.get("/users/team/:username/:name/:surname", checkAuth, (req, res) => {
 
   // Üye olduğu takımların bilgilerini almak için yeni sorgu
   const memberTeamsQuery = `
-    SELECT *
-    FROM team
-    WHERE member1Username = ? OR
-          member2Username = ? OR
-          member3Username = ? OR
-          member4Username = ? OR
-          member5Username = ?;
+    SELECT * FROM team
+    WHERE member1Username LIKE CONCAT('%', ?, '%') 
+       OR member2Username LIKE CONCAT('%', ?, '%') 
+       OR member3Username LIKE CONCAT('%', ?, '%') 
+       OR member4Username LIKE CONCAT('%', ?, '%') 
+       OR member5Username LIKE CONCAT('%', ?, '%');
   `;
 
   dbConnection.query(teamQuery, [getUsername], (teamErr, teamResults) => {
@@ -782,6 +807,9 @@ router.get("/users/team/:username/:name/:surname", checkAuth, (req, res) => {
           console.error("Member Team Query Error: ", memberErr);
           return res.status(500).send("Internal Server Error");
         }
+
+        // Dönen takım sayısını konsola yazdır
+        console.log("Member Teams Count:", memberTeamResults.length);
 
         // Tüm takımların sonuçlarını birleştir
         const allTeams = [...teamResults, ...memberTeamResults];

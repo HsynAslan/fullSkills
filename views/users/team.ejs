@@ -10,15 +10,25 @@
   </head>
   <body class="loginBody">
     <% include('../partials/userNavbar') %> <% teams.forEach(team => { %>
-    <h2>Team Name: <%= team.teamName %></h2>
-    <p>Team Leader: <%= team.createdByUsername %></p>
-    <ul>
-      <% // Takım üyeleri için bir döngü %> <% for (let i = 1; i <= 5; i++) { %>
-      <% const memberUsername = team[`member${i}Username`]; %> <% if
-      (memberUsername) { %>
-      <li><%= memberUsername %></li>
-      <% } %> <% } %>
-    </ul>
+    <div>
+      <h2>Team Name: <%= team.teamName %></h2>
+      <p>Team Leader: <%= team.createdByUsername %></p>
+      <ul>
+        <% // Takım üyeleri için bir döngü %> <% for (let i = 1; i <= 5; i++) {
+        %> <% const memberUsername = team[`member${i}Username`]; %> <% if
+        (memberUsername) { %>
+        <li><%= memberUsername %></li>
+        <% if (userInfo.username === team.createdByUsername) { %>
+        <!-- Takım kaptanıysanız, silme butonunu göster -->
+        <form
+          action="/users/team/<%= team.id %>/member/<%= i %>/delete"
+          method="post"
+        >
+          <button type="submit">Delete Member</button>
+        </form>
+        <% } %> <% } %> <% } %>
+      </ul>
+    </div>
     <% }) %> <% include('../partials/foot') %>
   </body>
 </html>
