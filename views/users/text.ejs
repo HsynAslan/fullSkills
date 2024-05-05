@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+    <link rel="stylesheet" href="dist/notiflix-X.X.X.min.css" />
+    <title><%= userInfo.name %> Text</title>
+  </head>
+  <body class="loginBody">
+    <div class="nav-links">
+      <a
+        href="/users/network/<%= userInfo.username %>"
+        class="<%= currentPage === '/about' ? 'activeButton' : 'nav-link' %>"
+        >Network</a
+      >
+      <a
+        href="/users/team/<%= userInfo.username %>/<%= userInfo.name %>/<%= userInfo.surname %>"
+        class="<%= currentPage === '/about' ? 'activeButton' : 'nav-link' %>"
+        >Team</a
+      >
+      <a
+        href="/users/<%= userInfo.username %>/wp/MainPage"
+        class="<%= currentPage === '/about' ? 'activeButton' : 'nav-link' %>"
+        >Whatsapp</a
+      >
+      <a
+        href="/users/notification/<%= userInfo.username %>"
+        class="<%= currentPage === '/about' ? 'activeButton' : 'nav-link' %>"
+      >
+        Notification
+      </a>
+      <a
+        href="/profile/user/<%= userInfo.username %> "
+        class="<%= currentPage === '/about' ? 'activeButton' : 'nav-link' %>"
+        ><%= userInfo.name %></a
+      >
+    </div>
+  </div>
+  
+    <div class="wpbg">
+      <div class="friendList">
+        <div>
+          <div class="centerHeader pt-3"><h3>Arkadaşlar</h3></div>
+          <div>
+            <!-- buraya arkadaşlar listelensin -->
+            <ul>
+              <% friends.forEach(friend => { %>
+                  <li>
+                      <%= friend.name %> <%= friend.surname %> (<%= friend.username %>)
+                      <form action="/users/<%= userInfo.username %>/wp/MainPage/<%= friend.username %>" method="GET">
+                          <button type="submit">Git</button>
+                      </form>
+                  </li>
+              <% }); %>
+          </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <footer>
+      <div class="footer-bp ps-4 pe-4 pt-4 pb-4">
+        <div>
+          <div class="me-4">
+            <i class="fa-regular fa-envelope me-2"> </i>
+            <p><a href="mailto:btdhaslan@gmail.com">Send Us a Mail</a></p>
+          </div>
+          <div>
+            <i class="fa-solid fa-location-dot me-2"></i>
+            <h5>Trabzon</h5>
+          </div>
+        </div>
+        <div>
+          <i class="fa-brands fa-twitter me-4 fa-xl"></i>
+          <i class="fa-brands fa-facebook me-4 fa-xl"></i>
+          <i class="fa-brands fa-instagram me-4 fa-xl"></i>
+          <i class="fa-brands fa-github me-4 fa-xl"></i>
+          <i class="fa-brands fa-linkedin"></i>
+        </div>
+      </div>
+    </footer>
+    
+  </body>
+</html>

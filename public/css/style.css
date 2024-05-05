@@ -267,3 +267,15 @@
   max-height: 15vh;
   overflow-y: auto; /* Scroll bar'ı sadece gerektiğinde göster */
 }
+.wpbg {
+  background-color: #5b42f3;
+  height: 88%;
+  position: absolute;
+  width: 100%;
+}
+.friendList {
+  background-color: #00ddeb;
+  position: absolute;
+  height: 100%;
+  width: 25%;
+}

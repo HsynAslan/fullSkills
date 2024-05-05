@@ -681,6 +681,68 @@ router.post("/createTeam/:username", (req, res) => {
   );
 });
 
+router.get("/users/:username/wp/MainPage", checkAuth, (req, res) => {
+  const username = req.params.username;
+
+  // Kullanıcıyı veritabanından sorgula
+  const userQuery = "SELECT * FROM users WHERE username = ?";
+
+  dbConnection.query(userQuery, [username], (userErr, userResults) => {
+    if (userErr) {
+      console.error("User Query Error: ", userErr);
+      res.status(500).send("Internal Server Error");
+    } else {
+      if (userResults.length > 0) {
+        const userInfo = {
+          username: userResults[0].username,
+          name: userResults[0].name,
+          surname: userResults[0].surname,
+          // Diğer kullanıcı bilgileri...
+        };
+
+        // Arkadaşları sorgula
+        const friendsQuery = `
+          SELECT u.username, u.name, u.surname
+          FROM users u
+          JOIN friendships f ON u.username = f.user2Username
+          WHERE f.user1Username = ?
+          UNION
+          SELECT u.username, u.name, u.surname
+          FROM users u
+          JOIN friendships f ON u.username = f.user1Username
+          WHERE f.user2Username = ?;
+        `;
+
+        dbConnection.query(
+          friendsQuery,
+          [username, username],
+          (friendsErr, friendsResults) => {
+            if (friendsErr) {
+              console.error("Friends Query Error: ", friendsErr);
+              res.status(500).send("Internal Server Error");
+            } else {
+              const friends = friendsResults.map((friend) => ({
+                username: friend.username,
+                name: friend.name,
+                surname: friend.surname,
+              }));
+
+              res.render("users/text", {
+                currentPage: "/teamText",
+                userInfo: userInfo,
+                friends: friends,
+              });
+            }
+          }
+        );
+      } else {
+        // Kullanıcı bulunamadı
+        res.status(404).send("Kullanıcı bulunamadı");
+      }
+    }
+  });
+});
+
 router.get("/users/team/:username", checkAuth, (req, res) => {
   const requestedUsername = req.params.username;
 
