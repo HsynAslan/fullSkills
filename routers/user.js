@@ -681,6 +681,83 @@ router.post("/createTeam/:username", (req, res) => {
   );
 });
 
+router.post("/sendMessage/:sender/:receiver", (req, res) => {
+  const sender_username = req.params.sender;
+  const receiver_username = req.params.receiver;
+  const { content } = req.body;
+  const send_date = new Date().toISOString().slice(0, 19).replace("T", " "); // Şu anki zamanı ISO 8601 formatında alır
+  const delivery_status = "delivered"; // Teslim edildiği için delivery status 'delivered' olarak ayarlanır
+
+  // Veritabanına mesajı ekle
+  const insertMessageQuery = `
+      INSERT INTO messages (sender_username, receiver_username, content, send_date, delivery_status)
+      VALUES (?, ?, ?, ?, ?)
+  `;
+
+  dbConnection.query(
+    insertMessageQuery,
+    [sender_username, receiver_username, content, send_date, delivery_status],
+    (err, result) => {
+      if (err) {
+        console.error("Mesaj ekleme hatası: ", err);
+        res.status(500).send("Mesaj gönderme işlemi başarısız oldu.");
+        console.log("sender_username: " + sender_username);
+        console.log("receiver_username: " + receiver_username);
+        console.log("content: " + content);
+        console.log("send_date: " + send_date);
+        console.log("delivery_status: " + delivery_status);
+        return;
+      }
+
+      console.log("Mesaj başarıyla eklendi.");
+      res.status(200).send("Mesajınız başarıyla gönderildi.");
+    }
+  );
+});
+
+/*
+router.post("/saveUser", (req, res) => {
+  // req.body objesinden gerekli bilgileri al
+  const {
+    signInName,
+    signInSurName,
+    signInUsername,
+    signInPassword,
+    signInPasswordA,
+    teacher,
+  } = req.body;
+
+  // Diğer kontrolleri ve işlemleri gerçekleştir
+  console.log("----------------------");
+  console.log("öğretmen misin: " + teacher);
+
+  // Örneğin, parolaların eşleşip eşleşmediğini kontrol et
+  if (signInPassword !== signInPasswordA) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Passwords do not match" });
+  }
+
+  // Veritabanına ekleme işlemi
+  const query =
+    "INSERT INTO users (username, password, name, surname, isteacher) VALUES (?, ?, ?, ?, ?)";
+
+  dbConnection.query(
+    query,
+    [signInUsername, signInPassword, signInName, signInSurName, teacher],
+    (err, result) => {
+      if (err) {
+        console.error("MySQL Query Error: ", err);
+        res.status(500).json({ success: false });
+      } else {
+        res.redirect("/login");
+      }
+    }
+  );
+});
+
+*/
+
 router.get("/users/:username/wp/MainPage", checkAuth, (req, res) => {
   const username = req.params.username;
 
@@ -814,6 +891,8 @@ router.get("/users/:username/wp/:rUsername", checkAuth, (req, res) => {
             },
             friends: friends,
             messages: messages,
+            sender_username,
+            receiver_username,
           });
         }
       );

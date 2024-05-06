@@ -306,3 +306,7 @@
   flex-direction: column;
   flex-wrap: wrap;
 }
+.messagesBox {
+  width: 75% !important;
+  height: 50% !important;
+}

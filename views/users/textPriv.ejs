@@ -41,7 +41,7 @@
   
     <div class="wpbg">
       <div class="friendList">
-        <div>
+        <div class="">
           <div class="centerHeader pt-3"><h3>Arkadaşlar</h3></div>
           <div>
             <!-- buraya arkadaşlar listelensin -->
@@ -63,9 +63,10 @@
         mesaj kısmı
 
         <div class="messages">
-          <h1>Messages between  and </h1>
+          
           <div class="between">
             <% messages.forEach(message => { %>
+              
               <% if (message.sender === userInfo.username) { %>
                 <div class="sender-message">
                   <p>Sender: <%= message.senderName %> <%= message.senderSurname %></p>
@@ -84,6 +85,23 @@
                 </div>
               <% } %>
             <% }); %>
+          </div>
+          <div class="sendBox">
+            <div>
+              <h1>GÖnderici Ad: <%=  %></h1>
+              <h1>GÖnderici Soyad: <%=  %></h1>
+              <h1>GÖnderici username: <%= sender_username %></h1>
+              <h1>Alıcı Ad: <%=  %></h1>
+              <h1>Alıcı Soyad: <%=  %></h1>
+              <h1>Alıcı username: <%= receiver_username %></h1>
+              
+              <form id="sendMessage" action="/sendMessage/<%= sender_username %>/<%= receiver_username %>" method="POST">
+                  <input type="text" id="messageInput" name="content" placeholder="Enter your message...">
+                  <button type="submit">Send</button>
+              </form>
+          </div>
+          
+
           </div>
         </div>
         
