@@ -743,6 +743,84 @@ router.get("/users/:username/wp/MainPage", checkAuth, (req, res) => {
   });
 });
 
+router.get("/users/:username/wp/:rUsername", checkAuth, (req, res) => {
+  const username = req.params.username;
+  const sender_username = req.params.username;
+  const receiver_username = req.params.rUsername;
+
+  // Arkadaşları sorgula
+  const friendsQuery = `
+    SELECT username, name, surname
+    FROM users
+    WHERE username IN (
+      SELECT user1Username AS username FROM friendships WHERE user2Username = ? 
+      UNION
+      SELECT user2Username AS username FROM friendships WHERE user1Username = ?
+    );
+  `;
+
+  // Mesajları sorgula
+  const messagesQuery = `
+    SELECT m.*, s.name AS sender_name, s.surname AS sender_surname, r.name AS receiver_name, r.surname AS receiver_surname
+    FROM messages m
+    JOIN users s ON m.sender_username = s.username
+    JOIN users r ON m.receiver_username = r.username
+    WHERE m.sender_username = ? OR m.receiver_username = ?
+    ORDER BY m.send_date;
+  `;
+
+  dbConnection.query(
+    friendsQuery,
+    [username, username],
+    (friendsErr, friendsResults) => {
+      if (friendsErr) {
+        console.error("Friends Query Error: ", friendsErr);
+        res.status(500).send("Internal Server Error");
+        return;
+      }
+
+      const friends = friendsResults.map((friend) => ({
+        username: friend.username,
+        name: friend.name,
+        surname: friend.surname,
+      }));
+
+      dbConnection.query(
+        messagesQuery,
+        [username, username],
+        (messagesErr, messagesResults) => {
+          if (messagesErr) {
+            console.error("Messages Query Error: ", messagesErr);
+            res.status(500).send("Internal Server Error");
+            return;
+          }
+
+          const messages = messagesResults.map((message) => ({
+            content: message.content,
+            sender: message.sender_username,
+            receiver: message.receiver_username,
+            senderName: message.sender_name,
+            senderSurname: message.sender_surname,
+            receiverName: message.receiver_name,
+            receiverSurname: message.receiver_surname,
+            sendDate: message.send_date,
+            deliveryStatus: message.delivery_status,
+            readDate: message.read_date,
+          }));
+
+          res.render("users/textPriv", {
+            userInfo: {
+              username: username,
+            },
+            friends: friends,
+            messages: messages,
+          });
+        }
+      );
+    }
+  );
+});
+
 router.get("/users/team/:username", checkAuth, (req, res) => {
   const requestedUsername = req.params.username;
 

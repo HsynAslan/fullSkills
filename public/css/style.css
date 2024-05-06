@@ -279,3 +279,30 @@
   height: 100%;
   width: 25%;
 }
+.linkUnderline {
+  text-decoration: none;
+  list-style-type: none;
+}
+.linkUnderline button {
+  border: none;
+  margin-top: 1vh;
+}
+.messages {
+  position: absolute;
+  left: 25%;
+}
+.sender-message {
+  background-color: lightblue;
+}
+
+.receiver-message {
+  text-align: left;
+  background-color: lightgreen;
+}
+.between {
+  background: aquamarine;
+  width: 100% !important;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}

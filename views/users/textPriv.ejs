@@ -58,6 +58,39 @@
           </div>
         </div>
       </div>
+
+      <div>
+        mesaj kısmı
+
+        <div class="messages">
+          <h1>Messages between  and </h1>
+          <div class="between">
+            <% messages.forEach(message => { %>
+              <% if (message.sender === userInfo.username) { %>
+                <div class="sender-message">
+                  <p>Sender: <%= message.senderName %> <%= message.senderSurname %></p>
+                  <p>Content: <%= message.content %></p>
+                  <p>Send Date: <%= message.sendDate %></p>
+                  <p>Delivery Status: <%= message.deliveryStatus %></p>
+                  <p>Read Date: <%= message.readDate %></p>
+                </div>
+              <% } else { %>
+                <div class="receiver-message">
+                  <p>Sender: <%= message.senderName %> <%= message.senderSurname %></p>
+                  <p>Content: <%= message.content %></p>
+                  <p>Send Date: <%= message.sendDate %></p>
+                  <p>Delivery Status: <%= message.deliveryStatus %></p>
+                  <p>Read Date: <%= message.readDate %></p>
+                </div>
+              <% } %>
+            <% }); %>
+          </div>
+        </div>
+        
+        
+        </div>
+      </div>
+      
     </div>
 
 
