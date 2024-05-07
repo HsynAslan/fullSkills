@@ -709,8 +709,7 @@ router.post("/sendMessage/:sender/:receiver", (req, res) => {
         return;
       }
 
-      console.log("Mesaj başarıyla eklendi.");
-      res.status(200).send("Mesajınız başarıyla gönderildi.");
+      res.redirect("/users/" + sender_username + "/wp/" + receiver_username);
     }
   );
 });
@@ -838,12 +837,17 @@ router.get("/users/:username/wp/:rUsername", checkAuth, (req, res) => {
 
   // Mesajları sorgula
   const messagesQuery = `
-    SELECT m.*, s.name AS sender_name, s.surname AS sender_surname, r.name AS receiver_name, r.surname AS receiver_surname
+    SELECT m.*, 
+           s.name AS sender_name, 
+           s.surname AS sender_surname, 
+           r.name AS receiver_name, 
+           r.surname AS receiver_surname
     FROM messages m
     JOIN users s ON m.sender_username = s.username
     JOIN users r ON m.receiver_username = r.username
-    WHERE m.sender_username = ? OR m.receiver_username = ?
-    ORDER BY m.send_date;
+    WHERE (m.sender_username = ? AND m.receiver_username = ?)
+       OR (m.sender_username = ? AND m.receiver_username = ?)
+    ORDER BY m.send_date DESC;
   `;
 
   dbConnection.query(
@@ -864,7 +868,12 @@ router.get("/users/:username/wp/:rUsername", checkAuth, (req, res) => {
 
       dbConnection.query(
         messagesQuery,
-        [username, username],
+        [
+          sender_username,
+          receiver_username,
+          receiver_username,
+          sender_username,
+        ],
         (messagesErr, messagesResults) => {
           if (messagesErr) {
             console.error("Messages Query Error: ", messagesErr);
