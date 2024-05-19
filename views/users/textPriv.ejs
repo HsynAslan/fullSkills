@@ -37,8 +37,7 @@
         ><%= userInfo.name %></a
       >
     </div>
-  </div>
-  
+
     <div class="wpbg">
       <div class="friendList">
         <div class="">
@@ -47,70 +46,78 @@
             <!-- buraya arkadaşlar listelensin -->
             <ul>
               <% friends.forEach(friend => { %>
-                  <li class="linkUnderline">
-                      
-                      <form action="/users/<%= userInfo.username %>/wp/<%= friend.username %>" method="GET">
-                          <button type="submit"><%= friend.name %> <%= friend.surname %> </button>
-                      </form>
-                  </li>
+              <li class="linkUnderline">
+                <form
+                  action="/users/<%= userInfo.username %>/wp/<%= friend.username %>"
+                  method="GET"
+                >
+                  <button type="submit">
+                    <%= friend.name %> <%= friend.surname %>
+                  </button>
+                </form>
+              </li>
               <% }); %>
-          </ul>
+            </ul>
           </div>
         </div>
       </div>
 
       <div>
-        mesaj kısmı
+        <div class="messages" id="messagesContainer">
+          <div class="between" id="messagesList">
+            <% messages.forEach(message => { %> <% if (message.sender ===
+            userInfo.username) { %>
+            <div class="message sender-message">
+              <p>
+                Gönderen: <%= message.senderName %> <%= message.senderSurname %>
+              </p>
+              <p>İçerik: <%= message.content %></p>
+              <p>Gönderim Tarihi: <%= message.sendDate %></p>
+              <p>
+                Teslim Durumu: <% if (message.deliveryStatus === 'read') { %>
+                <i class="fa-solid fa-check-double"></i>
+                <% } else { %>
+                <i class="fa-solid fa-check"></i>
+                <% } %>
+              </p>
 
-        <div class="messages">
-          
-          <div class="between">
-            <% messages.forEach(message => { %>
-              
-              <% if (message.sender === userInfo.username) { %>
-                <div class="sender-message">
-                  <p>Sender: <%= message.senderName %> <%= message.senderSurname %></p>
-                  <p>Content: <%= message.content %></p>
-                  <p>Send Date: <%= message.sendDate %></p>
-                  <p>Delivery Status: <%= message.deliveryStatus %></p>
-                  <p>Read Date: <%= message.readDate %></p>
-                </div>
-              <% } else { %>
-                <div class="receiver-message">
-                  <p>Sender: <%= message.senderName %> <%= message.senderSurname %></p>
-                  <p>Content: <%= message.content %></p>
-                  <p>Send Date: <%= message.sendDate %></p>
-                  <p>Delivery Status: <%= message.deliveryStatus %></p>
-                  <p>Read Date: <%= message.readDate %></p>
-                </div>
-              <% } %>
-            <% }); %>
+              <p>Okuma Tarihi: <%= message.readDate %></p>
+            </div>
+            <% } else { %>
+            <div class="message receiver-message">
+              <p>
+                Gönderen: <%= message.senderName %> <%= message.senderSurname %>
+              </p>
+              <p>İçerik: <%= message.content %></p>
+              <p>Gönderim Tarihi: <%= message.sendDate %></p>
+              <p>Teslim Durumu: <%= message.deliveryStatus %></p>
+              <p>Okuma Tarihi: <%= message.readDate %></p>
+            </div>
+            <% } %> <% }); %>
+            <div id="scrollTarget"></div>
           </div>
           <div class="sendBox">
             <div>
-              <h1>GÖnderici Ad: <%=  %></h1>
-              <h1>GÖnderici Soyad: <%=  %></h1>
-              <h1>GÖnderici username: <%= sender_username %></h1>
-              <h1>Alıcı Ad: <%=  %></h1>
-              <h1>Alıcı Soyad: <%=  %></h1>
-              <h1>Alıcı username: <%= receiver_username %></h1>
-              
-              <form id="sendMessage" action="/sendMessage/<%= sender_username %>/<%= receiver_username %>" method="POST">
-                  <input type="text" id="messageInput" name="content" placeholder="Enter your message...">
-                  <button type="submit">Send</button>
+              <form
+                id="sendMessage"
+                action="/sendMessage/<%= userInfo.username %>/<%= receiver_username %>"
+                method="POST"
+              >
+                <input
+                  type="text"
+                  id="messageInput"
+                  name="content"
+                  placeholder="Mesajınızı girin..."
+                />
+                <button type="submit">
+                  <i class="fa-solid fa-paper-plane"></i>
+                </button>
               </form>
+            </div>
           </div>
-          
-
-          </div>
-        </div>
-        
-        
         </div>
       </div>
-      
     </div>
-
 
     <footer>
       <div class="footer-bp ps-4 pe-4 pt-4 pb-4">
@@ -133,6 +140,16 @@
         </div>
       </div>
     </footer>
-    
+
+    <script>
+      window.onload = function () {
+        var scrollTarget = document.getElementById("scrollTarget");
+        scrollTarget.scrollIntoView({ behavior: "smooth" });
+      };
+    </script>
+    <script
+      src="https://kit.fontawesome.com/d497048b92.js"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>

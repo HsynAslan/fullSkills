@@ -268,7 +268,7 @@
   overflow-y: auto; /* Scroll bar'ı sadece gerektiğinde göster */
 }
 .wpbg {
-  background-color: #5b42f3;
+  background-color: #089ba5;
   height: 88%;
   position: absolute;
   width: 100%;
@@ -288,25 +288,54 @@
   margin-top: 1vh;
 }
 .messages {
-  position: absolute;
-  left: 25%;
+  position: relative;
+  padding: 20px;
+  max-width: 800px;
+  margin: auto;
 }
+
+.message {
+  border-radius: 10px;
+  margin: 10px 0;
+  padding: 10px;
+  max-width: 60%;
+}
+
 .sender-message {
   background-color: lightblue;
+  text-align: right;
+  margin-left: auto;
 }
 
 .receiver-message {
-  text-align: left;
   background-color: lightgreen;
+  text-align: left;
+  margin-right: auto;
 }
+
 .between {
-  background: aquamarine;
-  width: 100% !important;
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
+  max-height: 76vh;
+  overflow-y: auto;
+
+  width: 140vh;
 }
-.messagesBox {
-  width: 75% !important;
-  height: 50% !important;
+.sendBox {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+#sendMessage {
+  display: flex;
+  align-items: center;
+}
+
+#messageInput {
+  width: 300px;
+  margin-right: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
