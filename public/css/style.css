@@ -95,6 +95,10 @@
 }
 .loginBody {
   background-color: #b79fd4;
+
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 .activeButton {
   background-color: gray;
@@ -230,12 +234,78 @@
   background-color: hsl(267, 30%, 68%);
   border-radius: 30px;
 }
+/* Bildirim merkezi stil ayarları */
+/* Bildirim merkezi stil ayarları */
 .notificationBox {
-  background-color: #5b42f3;
-  position: absolute;
-  width: 90%;
-  height: 70%;
+  background-color: rgba(91, 66, 243, 0.9); /* Transparan mor arka plan */
+  width: 80%; /* Genişliği %80 olarak ayarla */
+  max-width: 800px; /* Maksimum genişlik 800px */
+  height: auto; /* Yükseklik içeriğe göre ayarlanır */
+  max-height: 70%; /* Maksimum yükseklik 70% */
+  overflow-y: auto; /* Yüksekliği aşan içerik için dikey kaydırma */
+  margin: 50px auto; /* Merkezi konumlandırma */
+  padding: 20px; /* İçerik ile kenarlar arasında boşluk */
+  border-radius: 10px; /* Yuvarlatılmış köşeler */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Hafif gölge efekti */
+  backdrop-filter: blur(5px); /* Arka planı bulanıklaştırır */
+  color: white; /* Metin rengi beyaz */
 }
+
+/* Başlık stil ayarları */
+.notificationBox h2 {
+  font-size: 1.8em; /* Başlık boyutu */
+  text-align: center; /* Başlığı ortala */
+  margin-bottom: 20px; /* Başlık ile içerik arasında boşluk */
+  color: #ffffff; /* Başlık rengini beyaz yapar */
+}
+
+/* Liste elemanları stil ayarları */
+.notificationBox ul {
+  list-style: none; /* Liste işaretlerini kaldırır */
+  padding: 0; /* Liste içi boşlukları kaldırır */
+}
+
+.notificationBox li {
+  background-color: rgba(255, 255, 255, 0.1); /* Transparan beyaz arka plan */
+  padding: 10px; /* İçerik ile kenar arasında boşluk */
+  margin-bottom: 10px; /* Liste elemanları arasında boşluk */
+  border-radius: 5px; /* Yuvarlatılmış köşeler */
+  display: flex; /* Flexbox kullanımı */
+  justify-content: space-between; /* İçeriği yatayda arala */
+  align-items: center; /* İçeriği dikeyde ortala */
+}
+
+/* Buton stil ayarları */
+.notificationBox button {
+  background-color: #28a745; /* Buton arka plan rengi */
+  color: white; /* Buton metin rengi */
+  border: none; /* Buton kenarlarını kaldırır */
+  padding: 8px 16px; /* Buton iç boşluğu */
+  border-radius: 5px; /* Buton köşeleri yuvarlak */
+  cursor: pointer; /* Fare simgesini işaretçiye değiştirir */
+  transition: background-color 0.3s ease; /* Arka plan renginin yumuşak geçişi */
+}
+
+.notificationBox button:hover {
+  background-color: #218838; /* Hover durumunda buton rengi */
+}
+
+/* Reddet butonu stil ayarları */
+.notificationBox button[type="submit"] {
+  background-color: #dc3545; /* Reddet butonunun arka plan rengi */
+}
+
+.notificationBox button[type="submit"]:hover {
+  background-color: #c82333; /* Hover durumunda reddet butonunun rengi */
+}
+
+/* Geniş ekranlarda stili korumak için medya sorgusu */
+@media (min-width: 768px) {
+  .notificationBox {
+    margin: 50px auto; /* Büyük ekranlarda da merkezi konumlandırma */
+  }
+}
+
 .Button404 {
   border: none;
   background-color: white;
@@ -338,4 +408,213 @@
   padding: 10px;
   border-radius: 5px;
   border: 1px solid #ccc;
+}
+/* ****************************************************** */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f7f9fc;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar {
+  background-color: #333;
+  color: white;
+  padding: 15px;
+  text-align: center;
+}
+
+.navbar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar ul li {
+  display: inline;
+  margin-right: 15px;
+}
+
+.navbar ul li a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.navbar ul li a:hover {
+  text-decoration: underline;
+}
+
+.profile-container {
+  max-width: 1200px;
+  margin: 50px auto;
+  background: #b79fd4;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.profile-header {
+  background: #f9f9f9;
+  padding: ;
+  text-align: center;
+  border-bottom: 1px solid #eaeaea;
+  padding-bottom: 10px;
+  width: 100%;
+}
+
+.profile-header h1 {
+  margin: 0;
+  color: #333;
+}
+
+.profile-header .username {
+  color: #666;
+  margin: 10px 0;
+}
+
+.profile-info p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.profile-sections {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 20px;
+}
+
+.profile-section {
+  flex: 1;
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 5px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.profile-section h2 {
+  margin-top: 0;
+  border-bottom: 1px solid #eaeaea;
+  padding-bottom: 10px;
+  color: #444;
+}
+
+.profile-friends ul,
+.profile-skills ul {
+  list-style: none;
+  padding: 0;
+}
+
+.profile-friends li {
+  display: flex; /* Flexbox kullanımı */
+  justify-content: space-between; /* Öğeleri yatayda aralıklı yerleştir */
+  align-items: center; /* Öğeleri dikeyde ortala */
+  padding: 10px;
+  background: #f7f7f7;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.profile-friends .remove-button {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.profile-friends .remove-button:hover {
+  background: #c0392b;
+}
+
+.profile-skills li h3 {
+  margin: 0;
+  color: #333;
+}
+
+.profile-skills li p {
+  margin: 5px 0;
+  color: #666;
+}
+
+.profile-skills li {
+  background-color: #d1bcbccc;
+  padding: 5px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.profile-actions {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.profile-actions a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.profile-actions a:hover {
+  text-decoration: underline;
+}
+
+.footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 15px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+.logout-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #e74c3c;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  position: absolute; /* Butonu sayfanın sağ üst köşesine yerleştirmek için */
+  right: 20px; /* Sağ kenardan uzaklık */
+  top: 20px; /* Üst kenardan uzaklık */
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #c0392b;
+}
+.logout-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #aca2b9d0;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  height: 50px;
+  top: 88%;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #e5d4ff;
+}
+.displayFlexAyir {
+  display: flex;
+  justify-content: flex-end;
+}
+.displayFlexAyir form {
+  margin-left: 10px;
 }

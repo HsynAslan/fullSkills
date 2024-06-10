@@ -376,9 +376,20 @@ router.post("/login", (req, res) => {
       res.status(500).send("Internal Server Error");
     } else {
       if (results.length > 0) {
+        console.log("Kullanıcı Bilgileri: ", results[0]); // Kullanıcı bilgilerini konsola yazdır
+
+        // Oturum bilgilerini doğru anahtar isimleriyle ekleyin
         req.session.userInfo = {
-          name: username,
+          username: results[0].username,
+          name: results[0].name,
+          surname: results[0].surname,
+          isTeacher: results[0].isteacher, // Doğru anahtar ismiyle isTeacher bilgisi
         };
+
+        console.log(
+          "Oturum Bilgileri: isteacher ",
+          req.session.userInfo.isTeacher
+        ); // Oturum bilgilerini konsola yazdır
         res.redirect("/dashboard/user/" + username);
       } else {
         res.render("users/login", { error: "Invalid username or password" });
@@ -438,73 +449,139 @@ router.get("/removeFriend/:username/:deleteUsername", (req, res) => {
   );
 });
 
-router.use("/profile/user/:username", checkAuth, (req, res) => {
-  const requestedUsername = req.params.username;
+// Tarih formatlama fonksiyonu
+function formatDate(dateString) {
+  const options = { day: "2-digit", month: "short", year: "numeric" };
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", options);
+}
 
-  // Kullanıcının bilgilerini almak için sorgu
-  const query = "SELECT id, username FROM users WHERE username = ?";
-  // Arkadaşların bilgilerini almak için sorgu
-  const friendQuery = `
-    SELECT 
-      friends.friend_username AS friendUsername,
-      u.name,
-      u.surname,
-      u.username
-    FROM (
-      SELECT 
-        CASE 
-          WHEN user1Username = ? THEN user2Username 
-          ELSE user1Username 
-        END AS friend_username
-      FROM friendships
-      WHERE user1Username = ? OR user2Username = ?
-    ) AS friends
-    JOIN users u ON friends.friend_username = u.username;
+router.post("/profile/user/:username/remove-friend", checkAuth, (req, res) => {
+  const { friendUsername } = req.body;
+  const loggedInUsername = req.params.username;
+  // const loggedInUsername = req.session.userInfo.username;
+  console.log(`Silme işlemini yapan kullanıcı: ${loggedInUsername}`);
+  console.log(`Silinen arkadaş: ${friendUsername}`);
+  // Veritabanından arkadaşlığı silme sorgusu
+  const query = `
+      DELETE FROM friendships
+      WHERE (user1Username = ? AND user2Username = ?)
+         OR (user1Username = ? AND user2Username = ?);
   `;
 
-  dbConnection.query(query, [requestedUsername], (err, results) => {
+  dbConnection.query(
+    query,
+    [loggedInUsername, friendUsername, friendUsername, loggedInUsername],
+    (err, result) => {
+      if (err) {
+        console.error("MySQL Query Error: ", err);
+        res.status(500).send("Internal Server Error");
+      } else {
+        if (result.affectedRows > 0) {
+          res
+            .status(200)
+            .send({ success: true, message: "Friend removed successfully" });
+        } else {
+          res
+            .status(404)
+            .send({ success: false, message: "Friendship not found" });
+        }
+      }
+    }
+  );
+});
+
+router.get("/profile/user/:username", checkAuth, (req, res) => {
+  const requestedUsername = req.params.username;
+
+  const userQuery =
+    "SELECT id, username, name, surname FROM users WHERE username = ?";
+  const friendsQuery = `
+      SELECT 
+          friends.friend_username AS friendUsername,
+          u.name,
+          u.surname,
+          u.username
+      FROM (
+          SELECT 
+              CASE 
+                  WHEN user1Username = ? THEN user2Username 
+                  ELSE user1Username 
+              END AS friend_username
+          FROM friendships
+          WHERE user1Username = ? OR user2Username = ?
+      ) AS friends
+      JOIN users u ON friends.friend_username = u.username;
+  `;
+  const skillsQuery = `
+      SELECT skill, start_date, end_date, description, with_whom, rating
+      FROM user_skills
+      WHERE username = ?;
+  `;
+
+  dbConnection.query(userQuery, [requestedUsername], (err, userResults) => {
     if (err) {
       console.error("MySQL Query Error: ", err);
       res.status(500).send("Internal Server Error");
     } else {
-      if (results.length > 0) {
-        // Kullanıcı bulundu, bilgileri userInfo'ye ekle
+      if (userResults.length > 0) {
         const userInfo = {
-          id: results[0].id,
-          username: results[0].username,
+          id: userResults[0].id,
+          username: userResults[0].username,
+          name: userResults[0].name,
+          surname: userResults[0].surname,
         };
 
         dbConnection.query(
-          friendQuery,
+          friendsQuery,
           [requestedUsername, requestedUsername, requestedUsername],
           (friendErr, friendResults) => {
             if (friendErr) {
               console.error("Friendship Query Error: ", friendErr);
               res.status(500).send("Internal Server Error");
             } else {
-              let isTeamLeader = false;
-              const loggedInUsername = req.session.userInfo.username;
-              if (requestedUsername === loggedInUsername) {
-                isTeamLeader = true;
-              }
+              dbConnection.query(
+                skillsQuery,
+                [requestedUsername],
+                (skillErr, skillResults) => {
+                  if (skillErr) {
+                    console.error("Skills Query Error: ", skillErr);
+                    res.status(500).send("Internal Server Error");
+                  } else {
+                    const skills = skillResults.map((skill) => ({
+                      name: skill.skill,
+                      startDate: formatDate(skill.start_date),
+                      endDate: formatDate(skill.end_date),
+                      description: skill.description,
+                      withWhom: skill.with_whom,
+                      rating: skill.rating,
+                    }));
+                    let isProfileOwner = false;
+                    const loggedInUsername = req.session.userInfo.username;
+                    if (requestedUsername === loggedInUsername) {
+                      isProfileOwner = true;
+                    }
 
-              // Kullanıcı bilgilerini ve arkadaşlık bilgisini gönder
-              res.render("users/profile", {
-                currentPage: "/profile",
-                userInfo,
-                friends: friendResults,
-                isTeamLeader: isTeamLeader,
-              });
+                    res.render("users/profile", {
+                      currentPage: "/profile",
+                      userInfo,
+                      friends: friendResults,
+                      skills,
+                      isProfileOwner,
+                    });
+                  }
+                }
+              );
             }
           }
         );
       } else {
-        // Kullanıcı bulunamadı
         res.render("users/profile", {
           currentPage: "/profile",
           userInfo: null,
           friends: null,
-          isTeamLeader: false,
+          skills: null,
+          isProfileOwner: false,
         });
       }
     }
@@ -997,6 +1074,14 @@ router.post(
     });
   }
 );
+
+router.get("/filter", checkAuth, (req, res) => {
+  if (req.session.userInfo.isTeacher === 1) {
+    res.render("filter", { userInfo: req.session.userInfo });
+  } else {
+    res.redirect("/"); // Öğretmen olmayanları ana sayfaya yönlendir
+  }
+});
 
 router.get("/users/team/:username/:name/:surname", checkAuth, (req, res) => {
   const getUsername = req.params.username;

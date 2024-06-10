@@ -16,6 +16,39 @@
       class="<%= currentPage === '/about' ? 'activeButton' : 'nav-link' %>"
       >Team</a
     >
+
+    <% if (userInfo) { %>
+    <li class="nav-item">
+      <a class="nav-link" href="/users/network/<%= userInfo.username %>"
+        >Network</a
+      >
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/users/team/<%= userInfo.username %>">Team</a>
+    </li>
+    <% if (userInfo.isTeacher === 1) { %>
+    <li class="nav-item">
+      <a class="nav-link" href="/filter">Filtreleme</a>
+    </li>
+    <% } %>
+    <li class="nav-item">
+      <a class="nav-link" href="/users/notification/<%= userInfo.username %>"
+        >Notification</a
+      >
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/profile/user/<%= userInfo.username %>"
+        ><%= userInfo.name %></a
+      >
+    </li>
+    <li class="nav-item">
+      <span class="nav-link">
+        Öğretmen Durumu: <%= userInfo.isTeacher === 1 ? "Evet" : "Hayır" %> <%=
+        userInfo.username %> <%= userInfo.isTeacher %>
+      </span>
+    </li>
+    <% } %>
+
     <a
       href="/users/<%= userInfo.username %>/wp/MainPage"
       class="<%= currentPage === '/about' ? 'activeButton' : 'nav-link' %>"

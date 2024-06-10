@@ -1,65 +1,35 @@
-<!-- dashboard.ejs -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css" />
-      <link rel="stylesheet" type="text/css" href="/css/style.css" />
-      <title>Profile</title>
-      <link
-        rel="stylesheet"
-        href="path/to/font-awesome/css/font-awesome.min.css"
-      />
-    </head>
-  </head>
-  <body class="loginBody">
-    <%- include('../partials/userNavbar') %>
-    <div class="center-bp loginBoxAbout flexToBottom">
-      <% if (userInfo) { %>
-      <h2>
-        Çıkış için butona basın <%= userInfo.username %>
-        <button onclick="logout()">Çıkış Yap</button>
-      </h2>
-      <!-- Diğer kullanıcı bilgilerini de burada kullanabilirsin -->
-      isim: <%= userInfo.name %>
-      <h2>
-        arkadaşlık:
-        <ul>
-          <% friends.forEach(function(friend) { %>
-          <li>
-            <%= friend.name %> <%= friend.surname %>
-            <a
-              href="/removeFriend/<%= userInfo.username %>/<%= friend.friendUsername %>"
-              ><i class="fa-solid fa-delete-left"></i
-            ></a>
-          </li>
-          <% }); %>
-        </ul>
-      </h2>
-
-
-<div>
-
-
-
-
-
-
-
-</div>
-
-<div>
-  <h6>---cv indirme en son---</h3>
-</div>      
-
-      <% } else { %>
-      <p>Giriş yapmış bir kullanıcı bulunamadı.</p>
-      <% } %>
-    </div>
-    <%- include('../partials/foot') %>
+    <meta charset="UTF-8" />
+    <title><%= userInfo.username %>'s Profile</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
     <script>
+      function removeFriend(friendUsername) {
+        console.log(`Silme işlemini yapan kullanıcı: <%= userInfo.username %>`);
+        console.log(`Silinen arkadaş: ${friendUsername}`);
+
+        fetch(`/profile/user/<%= userInfo.username %>/remove-friend`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ friendUsername }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              alert("Friend removed successfully");
+              window.location.reload();
+            } else {
+              alert("Failed to remove friend: " + data.message);
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+
       function logout() {
         // Çıkış yap butonuna basıldığında yapılacak işlemler
         // Örneğin, isLogin değerini false yap ve /login sayfasına yönlendir
@@ -84,14 +54,77 @@
           });
       }
     </script>
-    <script
-      src="https://kit.fontawesome.com/d497048b92.js"
-      crossorigin="anonymous"
-    ></script>
-    <!-- <script>
-      function friendRemove(user, removeUser) {
-        res.redirect(`/removeFriend/user/removeUser`);
-      }
-    </script> -->
+  </head>
+  <body>
+    <%- include('../partials/userNavbar') %>
+    <!-- Navbar partial'ını ekliyoruz -->
+
+    <div class="profile-container">
+      <div class="profile-header">
+        <h1><%= userInfo.name %> <%= userInfo.surname %></h1>
+        <p class="username">@<%= userInfo.username %></p>
+        <div class="profile-info">
+          <p>
+            <strong>Full Name:</strong> <%= userInfo.name %> <%=
+            userInfo.surname %>
+          </p>
+          <p><strong>Username:</strong> @<%= userInfo.username %></p>
+        </div>
+        <!-- Çıkış yapma butonunu ekliyoruz -->
+      </div>
+      <div class="profile-sections">
+        <div class="profile-section profile-friends">
+          <h2>Friends</h2>
+          <% if (friends && friends.length > 0) { %>
+          <ul>
+            <% friends.forEach(friend => { %>
+            <li>
+              <%= friend.name %> <%= friend.surname %> (@<%= friend.username %>)
+              <button
+                class="remove-button"
+                onclick="removeFriend('<%= friend.username %>')"
+              >
+                Remove
+              </button>
+            </li>
+            <% }); %>
+          </ul>
+          <% } else { %>
+          <p>No friends found.</p>
+          <% } %>
+        </div>
+        <div class="profile-section profile-skills">
+          <h2>Skills</h2>
+          <% if (skills && skills.length > 0) { %>
+          <ul>
+            <% skills.forEach(skill => { %>
+            <li>
+              <h3><%= skill.name %></h3>
+              <p><strong>Description:</strong> <%= skill.description %></p>
+              <p>
+                <strong>Duration:</strong> <%= skill.startDate %> - <%=
+                skill.endDate %>
+              </p>
+              <p><strong>With:</strong> <%= skill.withWhom %></p>
+              <p><strong>Rating:</strong> <%= skill.rating %>/10</p>
+            </li>
+            <% }); %>
+          </ul>
+          <% } else { %>
+          <p>No skills found.</p>
+          <% } %>
+        </div>
+      </div>
+      <% if (isProfileOwner) { %>
+      <div class="profile-actions">
+        <a href="/profile/edit">Edit Profile</a>
+      </div>
+      <% } %>
+    </div>
+    <h2>
+      <button onclick="logout()" class="logout-button">Çıkış Yap</button>
+    </h2>
+    <%- include('../partials/foot') %>
+    <!-- Footer partial'ını ekliyoruz -->
   </body>
 </html>
