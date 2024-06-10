@@ -305,10 +305,10 @@ router.get(
     );
   }
 );
-// Öğretmenler için filtreleme sayfası
-router.get("/filtreleme", checkAuth, checkTeacher, (req, res) => {
-  res.render("teacher/filtreleme", { userInfo: req.session.userInfo });
-});
+// // Öğretmenler için filtreleme sayfası
+// router.get("/filtreleme", checkAuth, checkTeacher, (req, res) => {
+//   res.render("teacher/filtreleme", { userInfo: req.session.userInfo });
+// });
 
 router.get("/users/notification/:username", checkAuth, (req, res) => {
   const requestedUsername = req.params.username;
@@ -1096,41 +1096,6 @@ router.post(
 );
 
 router.get("/filter", checkAuth, checkTeacher, (req, res) => {
-  const defaultQuery = `
-    SELECT 
-      users.username, 
-      users.name, 
-      users.surname, 
-      user_skills.skill, 
-      COUNT(user_skills.skill) AS skill_count
-    FROM users
-    JOIN user_skills ON users.username = user_skills.username
-    WHERE users.isTeacher = 0
-    GROUP BY users.username, users.name, users.surname, user_skills.skill
-    ORDER BY skill_count DESC;
-  `;
-
-  dbConnection.query(defaultQuery, (err, results) => {
-    if (err) {
-      console.error("MySQL Query Error: ", err);
-      res.status(500).send("Internal Server Error");
-    } else {
-      // Sorgu sonuçlarını loglayarak kontrol ediyoruz
-      console.log("*************************");
-      console.log("Sorgu Sonuçları (skills):", results);
-      console.log("*************************");
-
-      // EJS dosyasına veri gönderimi
-      res.render("teacher/filtreleme", {
-        userInfo: req.session.userInfo,
-        skills: results, // EJS dosyasına gönderilen değişken
-      });
-    }
-  });
-});
-
-// Filtreleme sayfası (POST)
-router.get("/filter", checkAuth, checkTeacher, (req, res) => {
   const skill = req.query.skill; // Seçili beceri
 
   let skillQuery = `
@@ -1139,11 +1104,6 @@ router.get("/filter", checkAuth, checkTeacher, (req, res) => {
       users.name, 
       users.surname, 
       user_skills.skill, 
-      user_skills.start_date,
-      user_skills.end_date,
-      user_skills.description,
-      user_skills.with_whom,
-      user_skills.rating,
       COUNT(user_skills.skill) AS skill_count
     FROM users
     JOIN user_skills ON users.username = user_skills.username
@@ -1159,12 +1119,7 @@ router.get("/filter", checkAuth, checkTeacher, (req, res) => {
       users.username, 
       users.name, 
       users.surname, 
-      user_skills.skill, 
-      user_skills.start_date, 
-      user_skills.end_date, 
-      user_skills.description, 
-      user_skills.with_whom, 
-      user_skills.rating
+      user_skills.skill
     ORDER BY skill_count DESC;
   `;
 
@@ -1185,12 +1140,76 @@ router.get("/filter", checkAuth, checkTeacher, (req, res) => {
             userInfo: req.session.userInfo,
             results: results, // EJS şablonuna gönderilen değişken
             skills: skillResults,
+            selectedSkill: skill || "Tüm Beceriler", // Seçili beceri
           });
         }
       });
     }
   });
 });
+
+// Filtreleme sayfası (POST)
+// router.get("/filter", checkAuth, checkTeacher, (req, res) => {
+//   const skill = req.query.skill; // Seçili beceri
+
+//   let skillQuery = `
+//     SELECT
+//       users.username,
+//       users.name,
+//       users.surname,
+//       user_skills.skill,
+//       user_skills.start_date,
+//       user_skills.end_date,
+//       user_skills.description,
+//       user_skills.with_whom,
+//       user_skills.rating,
+//       COUNT(user_skills.skill) AS skill_count
+//     FROM users
+//     JOIN user_skills ON users.username = user_skills.username
+//     WHERE users.isTeacher = 0
+//   `;
+
+//   if (skill) {
+//     skillQuery += ` AND user_skills.skill = ? `;
+//   }
+
+//   skillQuery += `
+//     GROUP BY
+//       users.username,
+//       users.name,
+//       users.surname,
+//       user_skills.skill,
+//       user_skills.start_date,
+//       user_skills.end_date,
+//       user_skills.description,
+//       user_skills.with_whom,
+//       user_skills.rating
+//     ORDER BY skill_count DESC;
+//   `;
+
+//   const queryParams = skill ? [skill] : [];
+
+//   dbConnection.query(skillQuery, queryParams, (err, results) => {
+//     if (err) {
+//       console.error("MySQL Query Error: ", err);
+//       res.status(500).send("Internal Server Error");
+//     } else {
+//       const skillsQuery = "SELECT DISTINCT skill FROM user_skills";
+//       dbConnection.query(skillsQuery, (skillErr, skillResults) => {
+//         if (skillErr) {
+//           console.error("Skills Query Error: ", skillErr);
+//           res.status(500).send("Internal Server Error");
+//         } else {
+//           res.render("teacher/filtreleme", {
+//             userInfo: req.session.userInfo,
+//             results: results, // EJS şablonuna gönderilen değişken
+//             skills: skillResults,
+//           });
+//         }
+//       });
+//     }
+//   });
+// });
 
 router.get("/users/team/:username/:name/:surname", checkAuth, (req, res) => {
   const getUsername = req.params.username;

@@ -205,6 +205,7 @@
   flex-direction: column;
   flex-wrap: wrap;
   align-content: stretch;
+  height: 80vh;
 }
 .searchFriend h4 {
   display: flex;
@@ -708,7 +709,6 @@ body {
 }
 
 /* Filtreleme Sayfası İçin */
-/* Filtreleme Sayfası İçin */
 #filter-container {
   max-width: 1000px;
   margin: 20px auto;
@@ -722,43 +722,546 @@ body {
   margin-bottom: 1.5rem;
 }
 
-#filter-card {
-  border: 1px solid #007bff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-#filter-card-body {
-  background-color: #f9f9f9;
-  padding: 1.5rem;
-  border-radius: 10px;
-}
-
-#filter-card-title {
-  color: #007bff;
-  font-size: 1.25rem;
-}
-
-#filter-card-text {
-  font-size: 1rem;
-  color: #333;
-}
-
-#filter-btn-primary {
-  background-color: #007bff;
-  border-color: #007bff;
-  color: #fff;
-}
-
-#filter-btn-primary:hover {
-  background-color: #0056b3;
-  border-color: #004085;
-}
-
 #filter-results {
   margin-top: 2rem;
 }
 
-#filter-results #filter-card {
-  margin-bottom: 1.5rem;
+#filter-results-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.filter-result-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding: 10px;
+  border: 1px solid #007bff;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.result-info {
+  flex: 1;
+}
+
+.result-bar {
+  flex: 2;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+  height: 20px;
+  margin-left: 10px;
+}
+
+.result-bar .bar {
+  height: 100%;
+  background-color: #007bff;
+  text-align: center;
+  color: #fff;
+  white-space: nowrap;
+}
+/* Genel Ayarlar */
+body {
+  font-family: "Arial", sans-serif;
+  background-color: #f4f4f9;
+  margin: 0;
+  padding: 0;
+  color: #333;
+  overflow-x: hidden;
+}
+
+#loginBody {
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: url("/images/background.jpg") no-repeat center center fixed;
+  background-size: cover;
+}
+
+#dashboardAddSkill {
+  background: rgba(255, 255, 255, 0.8); /* Transparan beyaz arka plan */
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+}
+
+#allOptionDashboard {
+  margin: 0 auto;
+}
+
+#form-title {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+#skill {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#startDate,
+#endDate {
+  width: calc(50% - 1rem);
+  padding: 0.5rem;
+  margin: 0.5rem 0.5rem 1rem 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#description {
+  width: 100%;
+  height: 100px;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  resize: vertical;
+  margin-bottom: 1rem;
+}
+
+#withWhom {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#rating {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+#submitButton {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #007bff;
+  color: #fff;
+  text-align: center;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+#submitButton:hover {
+  background-color: #0056b3;
+}
+
+#dashboard-info {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  #dashboardAddSkill {
+    padding: 1rem;
+    width: 90%;
+  }
+
+  #form-title {
+    font-size: 1.2rem;
+  }
+}
+/* Genel ayarlar */
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
+  overflow-x: hidden; /* Yatay taşmayı önlemek için */
+}
+
+.login-body {
+  background-color: #e9ecef;
+}
+
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: auto; /* Kaydırma çubukları için */
+  max-height: 80vh; /* Maksimum yükseklik belirleme */
+}
+
+/* Skill Form Container */
+.skill-form-container {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Section */
+.form-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+}
+
+.form-control:focus {
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.btn {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  color: #ffffff;
+  background-color: #007bff;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+/* Başlıklar ve metinler */
+h6 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+p {
+  font-size: 1rem;
+  color: #495057;
+}
+
+/* Responsive Tasarım */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 15px;
+    overflow-x: auto; /* Küçük ekranlar için yatay kaydırma */
+  }
+
+  .skill-form-container {
+    padding: 20px;
+  }
+
+  .form-control {
+    margin-bottom: 15px;
+  }
+}
+/* Genel ayarlar */
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
+}
+
+#loginBody {
+  background-color: #e9ecef;
+}
+
+/* Genel ayarlar */
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
+  overflow-x: hidden; /* Yatay taşmayı önlemek için */
+}
+
+#loginBody {
+  background-color: #e9ecef;
+}
+
+/* Team Container */
+#teamContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: auto; /* Kaydırma çubukları için */
+  max-height: 80vh; /* Maksimum yükseklik belirleme */
+}
+
+/* Team Card */
+#teamCard {
+  background-color: #ffffff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+#teamCard:hover {
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+#teamName {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #007bff;
+  margin-bottom: 10px;
+  transition: color 0.3s ease-in-out;
+}
+
+#teamName:hover {
+  color: #0056b3;
+}
+
+#teamLeader {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 10px;
+}
+
+#teamMembers {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#teamMember {
+  font-size: 1rem;
+  color: #343a40;
+  padding: 10px 0;
+  border-bottom: 1px solid #dee2e6;
+  transition: background-color 0.3s ease-in-out;
+}
+
+#teamMember:hover {
+  background-color: #f1f1f1;
+}
+
+#teamMember:last-child {
+  border-bottom: none;
+}
+
+#deleteMemberForm {
+  display: inline-block;
+  margin-left: 10px;
+}
+
+#deleteMemberButton {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  color: #ffffff;
+  background-color: #dc3545;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+#deleteMemberButton:hover {
+  background-color: #c82333;
+}
+
+/* Responsive Tasarım */
+@media (max-width: 768px) {
+  #teamContainer {
+    padding: 15px;
+    overflow-x: auto; /* Küçük ekranlar için yatay kaydırma */
+  }
+
+  #teamCard {
+    padding: 15px;
+  }
+
+  #teamName {
+    font-size: 1.2rem;
+  }
+
+  #teamLeader {
+    font-size: 0.9rem;
+  }
+
+  #teamMember {
+    font-size: 0.9rem;
+  }
+}
+/* Genel ayarlar */
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
+  overflow-x: hidden; /* Yatay taşmayı önlemek için */
+}
+
+#loginBody {
+  background-color: #e9ecef;
+}
+
+/* Main Content */
+#mainContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: auto; /* Kaydırma çubukları için */
+  max-height: 80vh; /* Maksimum yükseklik belirleme */
+}
+
+/* Team Create Box */
+#teamCreateBox {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+#headerCenter {
+  margin-bottom: 20px;
+}
+
+#headerCenter h3 {
+  color: #007bff;
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* Select Friends */
+#teamCreateSelectFriends {
+  margin-top: 20px;
+}
+
+#friendsHeaderCenter {
+  margin-bottom: 15px;
+}
+
+#friendsHeaderCenter h5 {
+  color: #495057;
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+#selectFriends {
+  text-align: left;
+  max-height: 300px;
+  overflow-y: auto; /* Dikey kaydırma çubuğu */
+  padding: 10px;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  background-color: #f8f9fa;
+}
+
+#friendLabel {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #343a40;
+}
+
+/* Team Name Field */
+#teamNameField {
+  margin-top: 20px;
+}
+
+#teamNameField label {
+  font-size: 1rem;
+  color: #495057;
+  margin-right: 10px;
+}
+
+#teamName {
+  padding: 10px;
+  width: 100%;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+/* Submit Button */
+#submitButton {
+  margin-top: 20px;
+}
+
+#createTeamButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  color: #ffffff;
+  background-color: #007bff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+#createTeamButton:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive Tasarım */
+@media (max-width: 768px) {
+  #mainContent {
+    padding: 15px;
+    overflow-x: auto; /* Küçük ekranlar için yatay kaydırma */
+  }
+
+  #teamCreateBox {
+    padding: 20px;
+  }
+
+  #headerCenter h3 {
+    font-size: 1.5rem;
+  }
+
+  #friendsHeaderCenter h5 {
+    font-size: 1rem;
+  }
+
+  #teamName {
+    font-size: 0.9rem;
+  }
+
+  #createTeamButton {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
 }

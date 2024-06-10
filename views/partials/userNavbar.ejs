@@ -9,9 +9,13 @@
     <a
       href="/users/team/<%= userInfo.username %>"
       class="<%= currentPage === '/about' ? 'activeButton' : 'nav-link' %>"
-      >Team</a
+      >Create Team</a
     >
-
+    <a
+      href="/users/team/<%= userInfo.username %>/<%= userInfo.name %>/<%= userInfo.surname %>"
+      class="<%= currentPage === '/about' ? 'activeButton' : 'nav-link' %>"
+      >Takımlar</a
+    >
     <% if (userInfo) { %>
     <li class="nav-item">
       <a class="nav-link" href="/users/network/<%= userInfo.username %>"
@@ -32,6 +36,7 @@
       class="<%= currentPage === '/about' ? 'activeButton' : 'nav-link' %>"
       >Whatsapp</a
     >
+
     <a
       href="/users/notification/<%= userInfo.username %>"
       class="<%= currentPage === '/about' ? 'activeButton' : 'nav-link' %>"

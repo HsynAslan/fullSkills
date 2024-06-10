@@ -8,27 +8,32 @@
     <link rel="stylesheet" href="dist/notiflix-X.X.X.min.css" />
     <title><%= userInfo.name %> Team</title>
   </head>
-  <body class="loginBody">
-    <% include('../partials/userNavbar') %> <% teams.forEach(team => { %>
-    <div>
-      <h2>Team Name: <%= team.teamName %></h2>
-      <p>Team Leader: <%= team.createdByUsername %></p>
-      <ul>
-        <% // Takım üyeleri için bir döngü %> <% for (let i = 1; i <= 5; i++) {
-        %> <% const memberUsername = team[`member${i}Username`]; %> <% if
-        (memberUsername) { %>
-        <li><%= memberUsername %></li>
-        <% if (userInfo.username === team.createdByUsername) { %>
-        <!-- Takım kaptanıysanız, silme butonunu göster -->
-        <form
-          action="/users/team/<%= team.id %>/member/<%= i %>/delete"
-          method="post"
-        >
-          <button type="submit">Delete Member</button>
-        </form>
-        <% } %> <% } %> <% } %>
-      </ul>
+  <body class="login-body">
+    <%- include('../partials/userNavbar') %>
+    <div class="team-container">
+      <% teams.forEach(team => { %>
+      <div class="team-card">
+        <h2 class="team-name">Team Name: <%= team.teamName %></h2>
+        <p class="team-leader">Team Leader: <%= team.createdByUsername %></p>
+        <ul class="team-members">
+          <% // Takım üyeleri için bir döngü %> <% for (let i = 1; i <= 5; i++)
+          { %> <% const memberUsername = team[`member${i}Username`]; %> <% if
+          (memberUsername) { %>
+          <li class="team-member"><%= memberUsername %></li>
+          <% if (userInfo.username === team.createdByUsername) { %>
+          <!-- Takım kaptanıysanız, silme butonunu göster -->
+          <form
+            action="/users/team/<%= team.id %>/member/<%= i %>/delete"
+            method="post"
+            class="delete-member-form"
+          >
+            <button type="submit" class="btn btn-danger">Delete Member</button>
+          </form>
+          <% } %> <% } %> <% } %>
+        </ul>
+      </div>
+      <% }) %>
     </div>
-    <% }) %> <% include('../partials/foot') %>
+    <%- include('../partials/foot') %>
   </body>
 </html>

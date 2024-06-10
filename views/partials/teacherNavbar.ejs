@@ -1,88 +1,142 @@
 <!-- teacherNavbar.ejs -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="container-fluid" style="background-color: aqua">
-    <a class="navbar-brand" href="/">
+<div class="nav">
+  <div class="nav-logo">
+    <a href="/">
       <img src="/images/logo.jpg" alt="Logo" class="logo" />
     </a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#teacherNavbar"
-      aria-controls="teacherNavbar"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="teacherNavbar">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link" href="/dashboard">Dashboard (Skill Ekle)</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/users/network/<%= userInfo.username %>"
-            >Network</a
-          >
-        </li>
-        <li class="nav-item">
-          <a
-            class="nav-link"
-            href="/users/notification/<%= userInfo.username %>"
-            >Notification</a
-          >
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/users/<%= userInfo.username %>/wp/MainPage"
-            >WhatsApp</a
-          >
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/filter">Filtreleme</a>
-        </li>
-      </ul>
-      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link" href="/profile/user/<%= userInfo.username %>"
-            >Profilim</a
-          >
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/logout">Çıkış Yap</a>
-        </li>
-      </ul>
-    </div>
   </div>
-</nav>
+
+  <div class="nav-links">
+    <a
+      href="/dashboard/user/<%= userInfo.username %>"
+      class="<%= currentPage === '/dashboard' ? 'activeButton' : 'nav-link' %>"
+      >Dashboard (Skill Ekle)</a
+    >
+    <a
+      href="/users/network/<%= userInfo.username %>"
+      class="<%= currentPage === '/network' ? 'activeButton' : 'nav-link' %>"
+      >Network</a
+    >
+    <a
+      href="/users/notification/<%= userInfo.username %>"
+      class="<%= currentPage === '/notification' ? 'activeButton' : 'nav-link' %>"
+      >Notification</a
+    >
+    <a
+      href="/users/<%= userInfo.username %>/wp/MainPage"
+      class="<%= currentPage === '/whatsapp' ? 'activeButton' : 'nav-link' %>"
+      >WhatsApp</a
+    >
+    <a
+      href="/filter"
+      class="<%= currentPage === '/filter' ? 'activeButton' : 'nav-link' %>"
+      >Filtreleme</a
+    >
+    <a
+      href="/profile/user/<%= userInfo.username %>"
+      class="<%= currentPage === '/profile' ? 'activeButton' : 'nav-link' %>"
+      >Profilim</a
+    >
+    <a
+      href=""
+      onclick="logout()"
+      class="<%= currentPage === '/logout' ? 'activeButton' : 'nav-link' %>"
+      >Çıkış Yap</a
+    >
+  </div>
+</div>
 
 <!-- CSS Styles -->
 <style>
-  .navbar {
-    background-color: black;
-    padding: 1rem;
-  }
-
-  .navbar-brand {
+  .nav {
     display: flex;
+    justify-content: space-between;
     align-items: center;
+    background-color: black; /* Navbar arkaplan rengi */
+    padding: 1rem; /* Navbar içindeki boşluk */
+    margin-bottom: 1rem; /* Navbar altındaki boşluk */
   }
 
-  .logo {
+  .nav-logo a img {
     height: 40px;
     margin-right: 10px;
   }
 
-  .nav-link {
-    color: #343a40;
-    font-weight: bold;
+  .nav-links {
+    display: flex;
+    align-items: center;
   }
 
-  .nav-link:hover {
-    color: #0056b3;
-    text-decoration: underline;
+  .nav-links a {
+    color: white; /* Bağlantı metin rengi */
+    font-weight: bold; /* Kalın metin */
+    margin: 0 10px; /* Bağlantılar arasındaki boşluk */
+    text-decoration: none; /* Altı çizili olmaması */
+    padding: 10px 15px; /* Bağlantı içindeki boşluk */
+    border-radius: 5px; /* Kenar yuvarlama */
+    transition: background-color 0.3s ease; /* Arkaplan rengi değişim süresi */
   }
 
-  .navbar-toggler-icon {
-    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"><path stroke="rgba(0, 0, 0, 0.5)" stroke-width="2" linecap="round" linejoin="round" d="M4 7h22M4 15h22M4 23h22"/></svg>');
+  .nav-links a:hover {
+    background-color: #0056b3; /* Üzerine gelindiğinde arkaplan rengi */
+    color: white; /* Üzerine gelindiğinde metin rengi */
+  }
+
+  .nav-links .activeButton {
+    background-color: #343a40; /* Aktif buton arkaplan rengi */
+    color: white; /* Aktif buton metin rengi */
+  }
+
+  .nav-links a:last-child {
+    background-color: red; /* Çıkış yap butonunun arkaplan rengi */
+    color: white; /* Çıkış yap butonunun metin rengi */
+  }
+
+  .nav-links a:last-child:hover {
+    background-color: darkred; /* Çıkış yap butonunun üzerine gelindiğinde arkaplan rengi */
+  }
+
+  @media (max-width: 768px) {
+    .nav {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .nav-links {
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .nav-links a {
+      width: 100%;
+      text-align: left;
+      margin: 5px 0;
+    }
   }
 </style>
+<script>
+  function logout() {
+    // Çıkış yap butonuna basıldığında yapılacak işlemler
+    // Örneğin, isLogin değerini false yap ve /login sayfasına yönlendir
+    // Bu işlemleri yapabilmek için uygun bir endpoint veya fonksiyon tanımlaman gerekebilir
+    // Bu sadece bir örnektir, gerçek uygulamaya uygun şekilde uyarlamalısın
+    fetch("/logout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ isLogin: false }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Başarılı şekilde çıkış yapıldığında /login sayfasına yönlendir
+        if (data.success) {
+          window.location.href = "/login";
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+</script>

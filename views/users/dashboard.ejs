@@ -1,57 +1,60 @@
-<!-- dashboard.ejs -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css" />
-      <link rel="stylesheet" type="text/css" href="/css/style.css" />
-      <link rel="stylesheet" href="dist/notiflix-X.X.X.min.css" />
-      <title>
-        <%= userInfo ? userInfo.name + ' Dashboard' : 'Dashboard' %>
-      </title>
-    </head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+    <link rel="stylesheet" href="dist/notiflix-X.X.X.min.css" />
+    <title><%= userInfo ? userInfo.name + ' Dashboard' : 'Dashboard' %></title>
   </head>
-  <body class="loginBody">
+  <body class="login-body">
     <%- include('../partials/userNavbar') %>
-    <div class="">
+    <div class="dashboard-container">
       <% if (userInfo) { %>
-      <!-- Diğer kullanıcı bilgilerini de burada kullanabilirsin -->
-
-      <div class="dashboardAddSkill p-5">
+      <div class="skill-form-container p-5">
         <form action="/saveSkill" method="post">
-          <div class="allOptionDashboard ms-4">
-            <div class="mt-4 mb-5">
+          <div class="form-section ms-4">
+            <div class="form-group mt-4 mb-5">
               <label for="skill" class="me-3">Skill:</label>
-              <select name="skill" id="skill" class="d-Skill">
+              <select name="skill" id="skill" class="form-control">
                 <% skills.forEach(skill => { %>
                 <option value="<%= skill %>"><%= skill %></option>
                 <% }); %>
               </select>
             </div>
-            <div class="mb-2">
+            <div class="form-group mb-2">
               <label for="startDate">Başlangıç Tarihi:</label>
-              <input type="date" name="startDate" id="startDate" class="me-2" />
+              <input
+                type="date"
+                name="startDate"
+                id="startDate"
+                class="form-control me-2"
+              />
 
               <label for="endDate">Bitiş Tarihi:</label>
-              <input type="date" name="endDate" id="endDate" />
+              <input
+                type="date"
+                name="endDate"
+                id="endDate"
+                class="form-control"
+              />
             </div>
-            <div class="mb-5">
-              <h6>Tek günlük bir etkinlik ise lütfen günleri aynı gün</h6>
+            <div class="form-group mb-5">
+              <h6>Tek günlük bir etkinlik ise lütfen günleri aynı gün seçin</h6>
             </div>
-            <label for="description">Açıklama:</label>
-            <div class="mb-5">
+            <div class="form-group mb-5">
+              <label for="description">Açıklama:</label>
               <textarea
                 name="description"
                 id="description"
                 placeholder="Açıklama"
-                class="d-Aciklama"
+                class="form-control"
               ></textarea>
             </div>
-            <label for="withWhom">Kimle:</label>
-            <div class="mb-5 mt-2">
-              <select name="withWhom" id="withWhom">
+            <div class="form-group mb-5">
+              <label for="withWhom">Kimle:</label>
+              <select name="withWhom" id="withWhom" class="form-control">
                 <% friends.forEach(friend => { %>
                 <option value="<%= friend.name %> <%= friend.surname %>">
                   <%= friend.name %> <%= friend.surname %>
@@ -60,18 +63,24 @@
               </select>
             </div>
 
-            <div class="">
+            <div class="form-group mb-5">
               <label for="rating">Puan:</label>
-              <input type="number" name="rating" id="rating" min="0" max="10" />
+              <input
+                type="number"
+                name="rating"
+                id="rating"
+                class="form-control"
+                min="0"
+                max="10"
+              />
+              <h6>1-10 arası seçim yapın lütfen</h6>
             </div>
-            <h6>1-10 arası seçim yapın lütfen</h6>
-            <div class="mb-5 mt-5">
-              <button type="submit">Kaydet</button>
+            <div class="form-group mb-5 mt-5">
+              <button type="submit" class="btn btn-primary">Kaydet</button>
             </div>
           </div>
         </form>
       </div>
-
       <% } else { %>
       <p>Giriş yapmış bir kullanıcı bulunamadı.</p>
       <% } %>
