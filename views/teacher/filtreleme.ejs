@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Filtreleme</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+  </head>
+  <body>
+    <%- include('../partials/teacherNavbar') %>
+    <div id="filter-container" class="mt-5">
+      <h1>Filtreleme Sayfası</h1>
+      <form action="/filter" method="get">
+        <div id="filter-form-group" class="form-group">
+          <label for="skill">Beceri:</label>
+          <select id="skill" name="skill" class="form-control">
+            <option value="">Tüm Beceriler</option>
+            <% skills.forEach(function(skill) { %>
+            <option value="<%= skill.skill %>"><%= skill.skill %></option>
+            <% }) %>
+          </select>
+        </div>
+        <button type="submit" id="filter-btn-primary" class="btn btn-primary">
+          Filtrele
+        </button>
+      </form>
+
+      <div id="filter-results" class="mt-5">
+        <% if (results.length === 0) { %>
+        <p>Sonuç bulunamadı.</p>
+        <% } else { %> <% results.forEach(function(result) { %>
+        <div id="filter-card" class="card mb-3">
+          <div id="filter-card-body" class="card-body">
+            <h5 id="filter-card-title" class="card-title">
+              <%= result.name %> <%= result.surname %> (@<%= result.username %>)
+            </h5>
+            <p id="filter-card-text" class="card-text">
+              <strong>Beceri:</strong> <%= result.skill %><br />
+              <strong>Başlangıç Tarihi:</strong> <%= result.start_date %><br />
+              <strong>Bitiş Tarihi:</strong> <%= result.end_date %><br />
+              <strong>Açıklama:</strong> <%= result.description %><br />
+              <strong>Kimlerle:</strong> <%= result.with_whom %><br />
+              <strong>Değerlendirme:</strong> <%= result.rating %>/10<br />
+              <strong>Beceri Sayısı:</strong> <%= result.skill_count %>
+            </p>
+          </div>
+        </div>
+        <% }) %> <% } %>
+      </div>
+    </div>
+  </body>
+</html>

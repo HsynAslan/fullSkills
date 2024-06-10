@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Anasayfa</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css" />
+  </head>
+  <body>
+    <!-- Kullanıcıya özel navbar -->
+    <div class="container2 mt-5">
+      <div class="jumbotron text-center">
+        <h1 class="display-4">Hoş Geldiniz, <%= userInfo.name %>!</h1>
+        <p class="lead">
+          Platformumuzda yapabileceğiniz aktiviteler ve özellikler aşağıdadır:
+        </p>
+        <hr class="my-4" />
+      </div>
+
+      <div class="row p-3 jumbotron2">
+        <div class="col-md-6 mb-4">
+          <div class="card">
+            <img
+              src="/images/dashboard.jpg"
+              class="card-img-top img-fluid"
+              alt="Dashboard"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Dashboard</h5>
+              <p class="card-text">
+                Becerilerinizi ekleyin, güncelleyin ve izleyin.
+              </p>
+              <a
+                href="/dashboard/user/<%= userInfo.username %>"
+                class="btn btn-primary"
+                >Görüntüle</a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card">
+            <img
+              src="/images/network.jpg"
+              class="card-img-top img-fluid"
+              alt="Network"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Network</h5>
+              <p class="card-text">
+                Diğer kullanıcılarla bağlantı kurun ve ağınızı genişletin.
+              </p>
+              <a
+                href="/users/network/<%= userInfo.username %>"
+                class="btn btn-primary"
+                >Görüntüle</a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card">
+            <img
+              src="/images/team.jpg"
+              class="card-img-top img-fluid"
+              alt="Team"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Team</h5>
+              <p class="card-text">
+                Takım oluşturun veya mevcut takımlara katılın.
+              </p>
+              <a
+                href="/users/team/<%= userInfo.username %>"
+                class="btn btn-primary"
+                >Görüntüle</a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card">
+            <img
+              src="/images/notification.jpg"
+              class="card-img-top img-fluid"
+              alt="Notification"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Notification</h5>
+              <p class="card-text">
+                Arkadaşlık isteklerini ve bildirimleri görüntüleyin.
+              </p>
+              <a
+                href="/users/notification/<%= userInfo.username %>"
+                class="btn btn-primary"
+                >Görüntüle</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-4">
+          <div class="card">
+            <img
+              src="/images/whatsapp.jpg"
+              class="card-img-top img-fluid"
+              alt="WhatsApp"
+            />
+            <div class="card-body">
+              <h5 class="card-title">WhatsApp</h5>
+              <p class="card-text">WhatsApp ile iletişime geçin.</p>
+              <a
+                href="/users/<%= userInfo.username %>/wp/MainPage"
+                class="btn btn-primary"
+                >Görüntüle</a
+              >
+            </div>
+          </div>
+        </div>
+        <% if (userInfo.isTeacher === 1) { %>
+        <div class="col-md-6 mb-4">
+          <div class="card">
+            <img
+              src="/images/filter.jpg"
+              class="card-img-top img-fluid"
+              alt="Filtreleme"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Filtreleme</h5>
+              <p class="card-text">
+                Öğrencilerinizi becerilerine göre filtreleyin.
+              </p>
+              <a href="/filter" class="btn btn-primary">Görüntüle</a>
+            </div>
+          </div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+    <button onclick="logout()" class="logout-button">Çıkış Yap</button>
+    <%- include('../partials/foot') %>
+    <!-- Footer -->
+    <script>
+      function logout() {
+        // Çıkış yap butonuna basıldığında yapılacak işlemler
+        // Örneğin, isLogin değerini false yap ve /login sayfasına yönlendir
+        // Bu işlemleri yapabilmek için uygun bir endpoint veya fonksiyon tanımlaman gerekebilir
+        // Bu sadece bir örnektir, gerçek uygulamaya uygun şekilde uyarlamalısın
+        fetch("/logout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ isLogin: false }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // Başarılı şekilde çıkış yapıldığında /login sayfasına yönlendir
+            if (data.success) {
+              window.location.href = "/login";
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+    </script>
+  </body>
+</html>

@@ -14,7 +14,16 @@ const checkAuth = (req, res, next) => {
     res.locals.userInfo = req.session.userInfo;
     return next();
   } else {
-    res.redirect("/login");
+    res.status(403).send("Bu sayfaya erişim yetkiniz yok.");
+  }
+};
+
+// Öğretmenler için erişim kontrolü
+const checkTeacher = (req, res, next) => {
+  if (req.session.userInfo && req.session.userInfo.isTeacher === 1) {
+    return next();
+  } else {
+    res.status(403).send("Bu sayfaya erişim yetkiniz yok.");
   }
 };
 
@@ -296,6 +305,10 @@ router.get(
     );
   }
 );
+// Öğretmenler için filtreleme sayfası
+router.get("/filtreleme", checkAuth, checkTeacher, (req, res) => {
+  res.render("teacher/filtreleme", { userInfo: req.session.userInfo });
+});
 
 router.get("/users/notification/:username", checkAuth, (req, res) => {
   const requestedUsername = req.params.username;
@@ -376,28 +389,35 @@ router.post("/login", (req, res) => {
       res.status(500).send("Internal Server Error");
     } else {
       if (results.length > 0) {
-        console.log("Kullanıcı Bilgileri: ", results[0]); // Kullanıcı bilgilerini konsola yazdır
+        console.log("Kullanıcı Bilgileri: ", results[0]);
 
-        // Oturum bilgilerini doğru anahtar isimleriyle ekleyin
         req.session.userInfo = {
           username: results[0].username,
           name: results[0].name,
           surname: results[0].surname,
-          isTeacher: results[0].isteacher, // Doğru anahtar ismiyle isTeacher bilgisi
+          isTeacher: results[0].isteacher, // isTeacher bilgisini ekliyoruz
         };
 
         console.log(
           "Oturum Bilgileri: isteacher ",
           req.session.userInfo.isTeacher
-        ); // Oturum bilgilerini konsola yazdır
-        res.redirect("/dashboard/user/" + username);
+        );
+
+        // Öğretmen olup olmadığını kontrol et ve uygun sayfaya yönlendir
+        if (req.session.userInfo.isTeacher === 1) {
+          res.redirect("/tAnasayfa"); // Eğer öğretmense filtreleme sayfasına yönlendir
+        } else {
+          res.redirect("/dashboard/user/" + username); // Değilse dashboard'a yönlendir
+        }
       } else {
         res.render("users/login", { error: "Invalid username or password" });
       }
     }
   });
 });
-
+router.get("/tAnasayfa", checkAuth, checkTeacher, (req, res) => {
+  res.render("teacher/tAnasayfa");
+});
 router.use("/about", (req, res) => {
   res.render(path.join("users/about"), { currentPage: "/about" });
 });
@@ -1075,12 +1095,101 @@ router.post(
   }
 );
 
-router.get("/filter", checkAuth, (req, res) => {
-  if (req.session.userInfo.isTeacher === 1) {
-    res.render("filter", { userInfo: req.session.userInfo });
-  } else {
-    res.redirect("/"); // Öğretmen olmayanları ana sayfaya yönlendir
+router.get("/filter", checkAuth, checkTeacher, (req, res) => {
+  const defaultQuery = `
+    SELECT 
+      users.username, 
+      users.name, 
+      users.surname, 
+      user_skills.skill, 
+      COUNT(user_skills.skill) AS skill_count
+    FROM users
+    JOIN user_skills ON users.username = user_skills.username
+    WHERE users.isTeacher = 0
+    GROUP BY users.username, users.name, users.surname, user_skills.skill
+    ORDER BY skill_count DESC;
+  `;
+
+  dbConnection.query(defaultQuery, (err, results) => {
+    if (err) {
+      console.error("MySQL Query Error: ", err);
+      res.status(500).send("Internal Server Error");
+    } else {
+      // Sorgu sonuçlarını loglayarak kontrol ediyoruz
+      console.log("*************************");
+      console.log("Sorgu Sonuçları (skills):", results);
+      console.log("*************************");
+
+      // EJS dosyasına veri gönderimi
+      res.render("teacher/filtreleme", {
+        userInfo: req.session.userInfo,
+        skills: results, // EJS dosyasına gönderilen değişken
+      });
+    }
+  });
+});
+
+// Filtreleme sayfası (POST)
+router.get("/filter", checkAuth, checkTeacher, (req, res) => {
+  const skill = req.query.skill; // Seçili beceri
+
+  let skillQuery = `
+    SELECT 
+      users.username, 
+      users.name, 
+      users.surname, 
+      user_skills.skill, 
+      user_skills.start_date,
+      user_skills.end_date,
+      user_skills.description,
+      user_skills.with_whom,
+      user_skills.rating,
+      COUNT(user_skills.skill) AS skill_count
+    FROM users
+    JOIN user_skills ON users.username = user_skills.username
+    WHERE users.isTeacher = 0
+  `;
+
+  if (skill) {
+    skillQuery += ` AND user_skills.skill = ? `;
   }
+
+  skillQuery += `
+    GROUP BY 
+      users.username, 
+      users.name, 
+      users.surname, 
+      user_skills.skill, 
+      user_skills.start_date, 
+      user_skills.end_date, 
+      user_skills.description, 
+      user_skills.with_whom, 
+      user_skills.rating
+    ORDER BY skill_count DESC;
+  `;
+
+  const queryParams = skill ? [skill] : [];
+
+  dbConnection.query(skillQuery, queryParams, (err, results) => {
+    if (err) {
+      console.error("MySQL Query Error: ", err);
+      res.status(500).send("Internal Server Error");
+    } else {
+      const skillsQuery = "SELECT DISTINCT skill FROM user_skills";
+      dbConnection.query(skillsQuery, (skillErr, skillResults) => {
+        if (skillErr) {
+          console.error("Skills Query Error: ", skillErr);
+          res.status(500).send("Internal Server Error");
+        } else {
+          res.render("teacher/filtreleme", {
+            userInfo: req.session.userInfo,
+            results: results, // EJS şablonuna gönderilen değişken
+            skills: skillResults,
+          });
+        }
+      });
+    }
+  });
 });
 
 router.get("/users/team/:username/:name/:surname", checkAuth, (req, res) => {

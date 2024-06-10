@@ -618,3 +618,147 @@ body {
 .displayFlexAyir form {
   margin-left: 10px;
 }
+body {
+  font-family: "Arial", sans-serif;
+  background-color: #f4f4f9;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Yatay kaydırma çubuğunu önler */
+}
+
+.container2 {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  width: 80%;
+  left: 10%;
+  margin-left: 10%;
+  height: 50% !important;
+  overflow-y: auto;
+  max-height: 85vh;
+}
+
+.jumbotron {
+  position: sticky;
+  top: 0; /* Sticky pozisyonun başlangıcı */
+  background-color: #007bff;
+  color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  z-index: 1;
+}
+
+.jumbotron2 {
+  margin-top: calc(
+    30px + 3rem
+  ); /* jumbotronun padding ve margin değerlerini hesaba kat */
+  padding-top: 10px; /* Ekstra bir boşluk */
+}
+
+.card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-img-top {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  max-height: 30vh; /* Resim yüksekliği */
+  object-fit: cover; /* Resim orantılı şekilde kırpılır */
+}
+
+.card-title {
+  color: #007bff;
+  font-size: 1.25rem;
+}
+
+.card-text {
+  font-size: 1rem;
+  color: #666;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #004085;
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 95%;
+    max-height: none; /* Mobilde kaydırma çubuğunu kaldırmak için */
+  }
+
+  .card-img-top {
+    height: 150px; /* Mobil için resim yüksekliği */
+  }
+}
+/* Genel Stil */
+body {
+  font-family: "Arial", sans-serif;
+  background-color: #f4f4f9;
+  margin: 0;
+  padding: 0;
+}
+
+/* Filtreleme Sayfası İçin */
+/* Filtreleme Sayfası İçin */
+#filter-container {
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#filter-form-group {
+  margin-bottom: 1.5rem;
+}
+
+#filter-card {
+  border: 1px solid #007bff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#filter-card-body {
+  background-color: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 10px;
+}
+
+#filter-card-title {
+  color: #007bff;
+  font-size: 1.25rem;
+}
+
+#filter-card-text {
+  font-size: 1rem;
+  color: #333;
+}
+
+#filter-btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: #fff;
+}
+
+#filter-btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #004085;
+}
+
+#filter-results {
+  margin-top: 2rem;
+}
+
+#filter-results #filter-card {
+  margin-bottom: 1.5rem;
+}
